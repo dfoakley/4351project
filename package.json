@@ -18,5 +18,14 @@
   "bugs": {
     "url": "https://github.com/dfoakley/4351project/issues"
   },
-  "homepage": "https://github.com/dfoakley/4351project#readme"
+  "homepage": "https://github.com/dfoakley/4351project#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "crypto": "^1.0.1",
+    "express": "^4.17.1",
+    "express-session": "^1.17.2",
+    "fs": "0.0.1-security",
+    "mysql": "^2.18.1",
+    "xml2js": "^0.4.23"
+  }
 }
