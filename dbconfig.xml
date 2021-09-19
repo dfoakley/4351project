@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dbconfig>
+	<connectionLimit>100</connectionLimit>
+	<host>127.0.0.1</host>
+	<user>root</user>
+	<password>p@$$w0rd</password>
+	<database>group18</database>
+	<port>8001</port>
+</dbconfig>

@@ -1,0 +1,22 @@
+{
+  "name": "4351project",
+  "version": "1.0.0",
+  "description": "restaurant reservation system",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dfoakley/4351project.git"
+  },
+  "keywords": [
+    "reservation"
+  ],
+  "author": "dfoakley",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dfoakley/4351project/issues"
+  },
+  "homepage": "https://github.com/dfoakley/4351project#readme"
+}
