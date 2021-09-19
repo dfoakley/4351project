@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/client/styles.css"/>
+		<div class="ribbon">
+			<a href="/make-reservation"><span>Make a reservation</span></a>
+		</div>
+	</head>
+	<body>
+		<h1>Make a Reservation</h1>
+		<form action="/get-availability" method="get">
+			<table>
+				<tr>
+					<td class="rowHeader"><label for="selectDate">Select Date:</label></td>
+					<td class="rowContents"><input type="date" name="selectDate" onchange="validateDate()" required></td>
+					<td class="rowContents"><input type="time" name="selectTime" required min="10:00" max="21:30"></td>
+				</tr>
+				<tr>
+					<td class="rowHeader"><label for="numGuests">Number of Guests:</label></td>
+					<td class="rowContents" colspan="2"><input type="number" required min="1" max="20" name="numGuests"></td>
+				</tr>
+			</table>
+			<input type="submit" value="Submit"/>
+			<input type="reset"/>
+		</form>
+	</body>
+</html>
