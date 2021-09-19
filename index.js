@@ -15,7 +15,7 @@ var fs = require("fs");
 var session = require("express-session");
 
 //	js functions for hashing message with SHA-256 algorithm
-var crypto = require("crypto");
+var cryptoJS = require("crypto-js");
 
 //	include mysql
 var mysql = require("mysql");
@@ -56,3 +56,12 @@ var con = mysql.createPool(cfg);
 
 //	server listens on port 9001 for incoming connections
 module.exports = app.listen(process.env.PORT || 9001, () => console.log("Listening on port 9001!"));
+
+//	POST method to make reservation
+app.post("/make-reservation", function(req, res)
+{
+	var user = req.session.username;	//	TO DO: enable guest session
+	var numGuests = req.body.numGuests;
+	var resvDateTime = req.body.revDateTime;
+	var 
+}
