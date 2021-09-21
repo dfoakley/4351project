@@ -1,5 +1,6 @@
 package com.group18.controllers;
 
+import com.group18.dto.UserBean;
 import com.group18.entities.User;
 import com.group18.service.UserService;
 import lombok.NonNull;
@@ -10,17 +11,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/User")
+@CrossOrigin
 public class UserController {
     @Autowired
     UserService userService;
 
-//    @NonNull
-//    UserAuthenticationService authentication;
-//    @NonNull
-//    UserCrudService users;
-
     @GetMapping(value = "/{userNumber}", produces = "application/json")
-    public ResponseEntity<User> getUser (
+    public ResponseEntity<User> getUserByNumber (
         @PathVariable("userNumber") Integer userNumber
     ) {
         User user = userService.getUser(userNumber);
@@ -35,12 +32,18 @@ public class UserController {
         return new ResponseEntity<User>(user, HttpStatus.CREATED);
     }
 
-    @PostMapping("/login")
-    String login(
-            @RequestParam("username") final String username,
-            @RequestParam("password") final String password) {
-        return userService
-                .login(username, password)
-                .orElseThrow(() -> new RuntimeException("invalid login and/or password"));
+    @DeleteMapping(value = "/{userNumber}", produces = "application/json")
+    public ResponseEntity<User> getUser (
+            @PathVariable("userNumber") Integer userNumber
+    ) {
+        User user = userService.deleteUser(userNumber);
+        return new ResponseEntity<User>(user, HttpStatus.OK);
     }
+
+    @DeleteMapping("/deleteAllUsers")
+    public ResponseEntity<User> deleteAllUsers() {
+        userService.deleteAllUsers();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

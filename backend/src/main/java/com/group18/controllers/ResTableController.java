@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ResTable")
+@CrossOrigin
 public class ResTableController {
     @Autowired
     ResTableService resTableService;

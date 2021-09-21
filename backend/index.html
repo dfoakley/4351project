@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Hello World!</title>
+  </head>
+  <body>
+    <h1>HELLO!</h1>
+    <form name="registrationForm" class="" action="javascript:postUser()" method="post">
+      <label for="fname">First name:</label><br>
+      <input type="text" id="fname" name="fname"><br>
+      <label for="lname">Last name:</label><br>
+      <input type="text" id="lname" name="lname">
+	  <input type="submit">
+    </form>
+	
+	
+	Get User
+	
+	<form name="getForm" class="" action="javascript:getUser()" method="post">
+      <label for="fname">UserId:</label><br>
+      <input type="text" id="userNumber" name="userNumber"><br>
+	  <input type="submit">
+    </form>
+  </body>
+</html>
+
+
+<script type="text/javascript">
+	
+
+	function getUser() {
+		var formElements = document.forms['getForm'].elements
+		var url = "https://alex-json-server.herokuapp.com/User/" + formElements['userNumber'].value;
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url);
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.setRequestHeader("Content-Type", "application/json");
+		
+		xhr.onreadystatechange = function () {
+		if (xhr.readyState === 4) {
+			console.log(xhr.status);
+			console.log(xhr.responseText);
+		}};
+		
+		
+		
+		var data = {
+		  "userNumber": formElements['userNumber'].value
+		}
+		console.log("sending", data);
+
+		xhr.send(data);
+		var response = xhr;
+		console.log(response);
+	}
+</script>
+
+<script type="text/javascript">
+	var url = "https://alex-json-server.herokuapp.com/User/";
+
+	function postUser() {
+		var formElements = document.forms['registrationForm'].elements
+		
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", url);
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.setRequestHeader("Content-Type", "application/json");
+		
+		xhr.onreadystatechange = function () {
+		if (xhr.readyState === 4) {
+			console.log(xhr.status);
+			console.log(xhr.responseText);
+		}};
+		
+		
+		
+		var data = {
+  "billingAddress": "string",
+  "dinerNumber": 0,
+  "email": "string",
+  "id": 0,
+  "mailingAddress": "string",
+  "name": "string",
+  "passWord": "string",
+  "phoneNumber": 0,
+  "points": 0,
+  "preferredPayment": "string",
+  "userName": "string"
+}
+		console.log("sending", data);
+
+		xhr.send(data);
+		var response = xhr.responseText;
+		console.log(response);
+	}
+</script>

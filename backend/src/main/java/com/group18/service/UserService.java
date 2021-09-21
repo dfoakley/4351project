@@ -1,20 +1,21 @@
 package com.group18.service;
 
+import com.group18.converter.UserConverter;
+import com.group18.dto.UserBean;
 import com.group18.entities.User;
 import com.group18.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class UserService {
     @Autowired
     UserRepository repository;
 
-    public User getUser(Integer userNumber) {
-        Optional<User> user = repository.findById(userNumber);
+    public User getUser(Integer id) {
+        Optional<User> user = repository.findById(id);
         if (user.isPresent()) {
             return user.get();
         } else {
@@ -22,27 +23,31 @@ public class UserService {
         }
     }
 
+    public User deleteUser(Integer id) {
+        Optional<User> user = repository.findById(id);
+        if (user.isPresent()) {
+            repository.delete(user.get());
+            return user.get();
+        } else {
+            return null;
+        }
+    }
+
+    public void createUser(UserBean bean) {
+        User user = UserConverter.convert(bean);
+        repository.save(user);
+    }
+
     public void createUser(User user) {
         repository.save(user);
     }
 
     public Optional<User> findByToken(String token) {
-        return repository.findById(token);
+        return null;
     }
 
-    public Optional<String> login(String username, String password) {
-        Optional<User> foundUser = repository.findByUserName(username);
-        if(foundUser.isPresent() && password.equals(foundUser.get().getPassword())) {
-            final String uuid = UUID.randomUUID().toString();
-            final User user = User
-                    .builder()
-                    .id(uuid)
-                    .passWord(password)
-                    .userName(username)
-                    .build();
-            return Optional.of(uuid);
-        }
-        return Optional.empty();
+    public void deleteAllUsers() {
+        repository.deleteAll();
     }
 
     void logout(User user) {
