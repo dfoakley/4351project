@@ -14,7 +14,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @EnableSwagger2
 @SpringBootApplication(scanBasePackages={
-		"com.group18.service", "com.group18.controllers"})
+		"com.group18.service", "com.group18.controllers", "com.group18.config", "com.group18.security"})
 @EntityScan("com.group18.entities")
 @EnableJpaRepositories("com.group18.repository")
 public class Cosc4351projectApplication {
