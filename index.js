@@ -70,12 +70,15 @@ app.get("/make-reservation", function(req, res) {
 	res.sendFile(__dirname + "/client/make-reservation.html");
 });
 
+app.get("/registration", function(req, res) {
+	res.sendFile(__dirname + "/client/registration.html");
+});
+
 //	GET method to get availability around requested time
 app.get("/get-availability", function(req, res)
 {
-	var numGuests = req.body.numGuests;
-	var targetDate = req.body.targetDate;
-	var targetTime = req.body.targetTime;
+	// dummy data
+	//var tablesAvailableSize2 = [JSON.Parse('{ "TableId" : 
 });
 
 //	POST method to make reservation
@@ -85,4 +88,44 @@ app.post("/push-reservation", function(req, res)
 	var numGuests = req.body.numGuests;
 	var resvDateTime = req.body.revDateTime;
 	var ccNumEncrypt = cryptoJS.sha256.encrypt(req.body.ccNumRaw, cfg.password[0]);		//	TO DO: probably should do some encryption on the frontend before it hits here
+});
+
+app.post("/check-availability", function(req, res)
+{
+	const numGuests = req.query.partysize;
+	const resDate = new Date(req.query.dtim);
+});
+
+//	Function to add hours to a date value
+function addHours(baseDate, hours) {
+	baseDate.setTime(baseDate.getTime() + (hours * 60 * 60 * 1000));
+	return baseDate;
+}
+
+//	Function to figure out the table configuration
+function getTableConfiguration (numGuests, targetDateTime) {
+	
+}
+
+function buildTablesQuery(maxGuests, targetDateTime) {
+	var q =  "SELECT TableId ";
+		q += "FROM Tables "
+		q += "WHERE TableId NOT IN ";
+		q += "(";
+		q += "    SELECT TableId ";
+		q += "    FROM BookingTables ";
+		q += "    WHERE BookingId NOT IN ";
+		q += "    (";
+		q += "        SELECT BookingId ";
+		q += "        FROM Bookings ";
+		q += "        WHERE BookingDateTime NOT BETWEEN DATE_SUB('" + targetDateTime.toString() + "', INTERVAL 1.5 HOUR) AND DATE_ADD('" + targetDateTime.toString() + "', INTERVAL 1.5 HOUR)";
+		q += "    )";
+		q += ") ";
+		q += "AND MaxGuests = " + maxGuests.toString() + ";";
+		
+	return q;
+}
+
+app.get("*/*", function(req, res) {
+	res.sendStatus(404);
 });
