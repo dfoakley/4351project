@@ -6,22 +6,297 @@
 			<a href="/make-reservation"><span>Make a reservation</span></a>
 		</div>
 	</head>
-	<body>
-		<h1>Make a Reservation</h1>
-		<form action="/get-availability" method="get">
-			<table>
-				<tr>
-					<td class="rowHeader"><label for="selectDate">Select Date:</label></td>
-					<td class="rowContents"><input type="date" name="selectDate" onchange="validateDate()" required></td>
-					<td class="rowContents"><input type="time" name="selectTime" required min="10:00" max="21:30"></td>
-				</tr>
-				<tr>
-					<td class="rowHeader"><label for="numGuests">Number of Guests:</label></td>
-					<td class="rowContents" colspan="2"><input type="number" required min="1" max="20" name="numGuests"></td>
-				</tr>
-			</table>
-			<input type="submit" value="Submit"/>
-			<input type="reset"/>
-		</form>
-	</body>
+    <body>
+        <h1>Make a Reservation</h1>
+        <table>
+            <tr>
+                <td class="rowHeader"><label for="person_name">Name:</label></td>
+                <td class="rowContents" colspan="2"><input type="text" name="person_name" id="mk_res_1" required maxlength="100" style="width: 94%;" /></td>
+            </tr>
+            <tr>
+                <td class="rowHeader"><label for="phone_number">Phone Number:</label></td>
+                <td class="rowContents" colspan="2"><input type="tel" id="mk_res_2" name="phone_number" pattern="^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$" required placeholder="(123) 456-7890" style="width: 94%;" /></td>
+            </tr>
+            <tr>
+                <td class="rowHeader"><label for="email">E-mail:</label></td>
+                <td class="rowContents" colspan="2"><input type="email" name="email" id="mk_res_3" required placeholder="address@domain.com" style="width: 94%;" />
+            </tr>
+            <tr>
+                <td class="rowHeader"><label for="selectDate">Select Date:</label></td>
+                <td class="rowContents"><input type="date" name="selectDate" onchange="validateDate()" required id="mk_res_4"></td>
+                <td class="rowContents"><input type="time" name="selectTime" required min="10:00" max="22:00" id="mk_res_5"></td>
+            </tr>
+            <tr>
+                <td class="rowHeader"><label for="numGuests">Number of Guests:</label></td>
+                <td class="rowContents" colspan="2"><input type="number" required min="1" max="20" name="numGuests" id="mk_res_6" style="width: 94%;"></td>
+            </tr>
+			<tr style="visibility: hidden;" id="cc_row">
+				<td class="rowHeader"><label for="ccnum">Credit Card Number:</label></td>
+				<td class="rowContents">
+					<!--<div class="tooltip">
+						<span class="tooltiptext">Credit card required to reserve table on high volume days<span>-->
+						<input type="text" name="ccnum" id="mk_res_9" style="width: 94%;"></input><!--
+					</div>-->
+				</td>
+			</tr>
+        </table>
+        <button onclick="getAvailability()" id="mk_res_10" >Submit</button>
+        <button onclick="resetPage()">Reset</button>
+        <div class="alert-div" id="res_div">
+            <strong name="res_str" id="mk_res_7"></strong>
+            <label id="mk_res_8"></label>
+        </div>
+        <script type="text/javascript">
+            function addMinutes(dTim, minutes) {
+				dTim.setTime(dTim.getTime() + (minutes * 60 * 1000));
+				
+				return dTim;
+			}			
+			
+			function validateDate() {
+				var dTim = new Date();
+				dTim.setDate(Date.parse(document.getElementById("mk_res_4").value));
+				
+				if (document.getElementById("mk_res_5").value != "") {
+					dTim += Date.parse(document.getElementById("mk_res_5").value);
+				}
+				
+				var now = new Date();
+				
+				if (dTim < addMinutes(now, 15)) {
+					alert("Reservations must be made at least 15 minutes in advance");
+					
+					document.getElementById("mk_res_4").value = "";
+					document.getElementById("mk_res_5").value = "";
+				}
+				else if (isThanksgiving(dTim) || isSpecificDate(dTim, "12-25")) {
+					if (isThanksgiving(dTim)) {
+						alert("The restaurant is closed on Thanksgiving");
+					}
+					else {
+						alert("The restaurant is close on Christmas Day");
+					}
+					
+					document.getElementById("mk_res_4").value = "";
+					document.getElementById("mk_res_5").value = "";
+				}
+				
+				if (isHighTrafficDay(dTim)) {
+					doc.getElementById("cc_row").style.visibility = "visible";
+					doc.getElementById("cc_row").required = true;
+				}
+				else {
+					doc.getElementById("cc_row").style.visibility = "hidden";
+					doc.getElementById("cc_row").required = false;
+				}
+			}
+			
+			function isHighTrafficDay(dTim) {
+				var d = dTim.getDay();
+				var SixPM = Date.parse("2021-09-22T18:00:00").getTime();
+				
+				//	check if the weekend
+				switch (d) {
+					case 0:	//	Sunday
+					case 7:	//	Satuday
+						return true;
+					case 6:	//	Friday
+						if (d.getTime >= SixPM) {	//	After 6 PM
+							return true;
+						}
+						else {
+							break;
+						}
+					default:
+						break;
+				}
+				
+				if (isMemorialDay(dTim)) {	//	check for memorial day
+					return true;
+				}
+				
+				if (isLaborDay(dTim)) {	//	check for labor day
+					return true;
+				}
+				
+				if (isSpecificDate(dTim, "01-01")) {	//	check for new years day
+					return true;
+				}
+				
+				if (isSpecificDate(dTim, "07-04")) {	//	check for independence day
+					return true;
+				}
+				
+				if (isSpecificDate(dTim, "12-24")) {	//	check for christmas eve
+					return true;
+				}
+				
+				if (isSpecificDate(dTim, "12-31")) {	//	check for new years eve
+					return true;
+				}
+				
+				return false;
+			}
+			
+			function getAvailability() {
+                document.getElementById("res_div").style.visibility = 'visible';
+				
+				var numGuests = document.getElementById("mk_res_6").value;
+				var resDate = Date.parse(document.getElementById("mk_res_4").value) + Date.parse(document.getElementById("mk_res_5").value)
+				
+                var result = isAvailable(resDate, numGuests);
+                var isRegistered = false;
+
+                var str = document.getElementById("mk_res_7");
+                var lbl = document.getElementById("mk_res_8");
+
+                str.className = "";
+                lbl.className = "";
+
+                if (result) {
+                    str.innerHTML = "&nbsp;SUCCESS! ";
+                    str.style.backgroundColor = "#c6efce";
+                    str.style.color = "#006100";
+
+                    lbl.innerHTML = "Reservation made.&nbsp;";
+                    lbl.style.backgroundColor = "#c6efce";
+                    lbl.style.color = "#006100";
+                }
+                else {
+                    str.innerHTML = "&nbsp;FAILED! ";
+                    str.style.backgroundColor = "#ffc7ce";
+                    str.style.color = "#9b0006";
+
+                    lbl.innerHTML = "Unable to accommodate your party on the selected date and time.&nbsp;";
+                    lbl.style.backgroundColor = "#ffc7ce";
+                    lbl.style.color = "#9b0006";
+                }
+            }
+
+            function resetPage() {
+                var str = document.getElementById("mk_res_7");
+                var lbl = document.getElementById("mk_res_8");
+
+                str.className = "";
+                lbl.className = "";
+
+                document.getElementById("mk_res_1").value = "";
+                document.getElementById("mk_res_2").value = "";
+                document.getElementById("mk_res_3").value = "";
+                document.getElementById("mk_res_4").value = "";
+                document.getElementById("mk_res_5").value = "";
+                document.getElementById("mk_res_6").value = "";
+
+                document.getElementById("res_div").style.visibility = 'hidden';
+            }
+			
+			function isAvailable(datetime, partysize) {
+				
+				if (isThanksgiving(datetime) || isSpecificDate(datetime, "12-25")) {
+					alert("The restaurant is closed on this day");
+					return false;
+				}
+				
+				var xhr = new XMLHttpRequest();
+				var url = "/check-availability?dtim=" + datetime.toString() + "&partysize=" + partysize.toString();
+				
+				xhr.open('POST', url, true);
+				
+				return xhr.response;
+			}
+			
+			function addDays(baseDate, days)
+			{
+				baseDate.setTime(baseDate.getTime() + (days * 86400 * 1000));
+				
+				return baseDate;
+			}
+			
+			function isMemorialDay(dTim) {
+				var year = dTim.getFullYear();
+				var checkDay = Date.parse(year.toString() + "-06-01");	//	start on June 1st
+				var memorialDay;
+				
+				if (checkDay.getDay() == 1) {	//	if June 1 is a Monday, subtract a week
+					memorialDay = addDays(checkDay, -7);
+				}
+				else {	//	otherwise, subtract 1 day at time until we get to Monday
+					while (checkDay.getDay() != 1) {
+						checkDay = addDays(checkDay, -1);
+					}
+					
+					memorialDay = checkDay;
+				}
+				
+				return (dTim.getDate() == memorialDay.getDate());
+			}
+			
+			function isLaborDay(dTim) {
+				var year = dTim.getFullYear();
+				var checkDay = Date.parse(year.toString() + "09-01");	//	start on September 1st
+				var laborDay;
+				
+				while (checkDays.getDay() != 1) {
+					checkDay = addDays(checkDay, 1);
+				}
+				
+				laborDay = checkDay;
+				
+				return (dTim.getDate() == laborDay.getDate());
+			}
+			
+			function isSpecificDate(dTim, monthAndDateString) {
+				var year = dTim.getFullYear();
+				var specificDate = Date.parse(year.toString() + "-" + monthAndDateString);
+				
+				return (dTim.getDate() == specificDate.getDate());
+			}
+			
+			function isThanksgiving(dTim) {
+				var year = dTim.getFullYear();
+				var checkDay = new Date();
+				checkDay.setDate(Date.parse(year.toString() + "11-01"));
+				var numOfThursdays = 0;
+				
+				while (numOfThursdays < 4) {
+					if (checkDay.getDay() == 4) {
+						numOfThursdays++;
+					}
+					
+					checkDay = addDays(checkDay, 1);
+				}
+				
+				checkDay = addDays(checkDay, -1);
+				
+				return (dTim.getDate() == checkDay.getDate());
+			}
+			
+			// 	<site>Based on https://stackoverflow.com/questions/18279141/javascript-string-encryption-and-decryption
+			const encrypt = (salt, text) => {
+				const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
+				const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2);
+				const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
+				
+				return text
+					.split("")
+					.map(textToChars)
+					.map(applySaltToChar)
+					.map(byteHex)
+					.join("");
+			};
+			
+			const decrypt = (salt, encoded) => {
+				const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
+				const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
+				
+				return encoded
+					.match(/.{1,2}/g)
+					.map((hex) => parseInt(hex, 16))
+					.map(applySaltToChar)
+					.map((charCode) => String.fromCharCode(charCode))
+					.join("");
+			};
+			//	</site>
+        </script>
+    </body>	
 </html>

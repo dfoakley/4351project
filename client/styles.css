@@ -44,8 +44,9 @@ th {
 
 button {
 	background: #3500D3;
-	font-weight: bold;
+	font-weight: normal;
 	padding: 2px;
+	border-radius: 2px;
 }
 
 tr:nth-child(even) {
@@ -129,4 +130,49 @@ tr:nth-child(odd) {
 
 .rowContents select {
 	margin: 5px;
+}
+
+.alert-div {
+	margin-top: 5px;
+	visibility: hidden;
+}
+
+.alert-success {
+	strong, label {
+		background-color: #c6efce;
+		color: #006100;
+	}
+}
+
+.alert-failure {
+	strong, label {
+		background-color: #ffc7ce;
+		color: #9b0006;
+}
+
+.alert-success, .alert-failure {
+	text-indent: 1em;
+}
+
+.tooltip {
+	position: relative;
+	display: inline-block;
+	border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+	visibility: hidden;
+	width: 120px;
+	background-color: black;
+	color: #fff;
+	text-align: center;
+	padding: 5px 0;
+	border-radius: 6px;
+	
+	position: absolute;
+	z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+	visibility: visible;
 }
