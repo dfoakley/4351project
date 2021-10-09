@@ -10,34 +10,42 @@
         <h1>Make a Reservation</h1>
         <table>
             <tr>
-                <td class="rowHeader"><label for="person_name">Name:</label></td>
-                <td class="rowContents" colspan="2"><input type="text" name="person_name" id="mk_res_1" required maxlength="100" style="width: 94%;" /></td>
+                <td class="rowHeader"><label for="person-name">Name:</label></td>
+                <td class="rowContents" colspan="2"><input type="text" name="person-name" id="person-name-id" required maxlength="100" style="width: 94%;" /></td>
             </tr>
             <tr>
-                <td class="rowHeader"><label for="phone_number">Phone Number:</label></td>
-                <td class="rowContents" colspan="2"><input type="tel" id="mk_res_2" name="phone_number" pattern="^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$" required placeholder="(123) 456-7890" style="width: 94%;" /></td>
+                <td class="rowHeader"><label for="phone-number">Phone Number:</label></td>
+                <td class="rowContents" colspan="2"><input type="tel" id="phone-number-id" name="phone-number" pattern="^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$" required placeholder="(123) 456-7890" style="width: 94%;" /></td>
             </tr>
             <tr>
                 <td class="rowHeader"><label for="email">E-mail:</label></td>
-                <td class="rowContents" colspan="2"><input type="email" name="email" id="mk_res_3" required placeholder="address@domain.com" style="width: 94%;" />
+                <td class="rowContents" colspan="2"><input type="email" name="email" id="email-id" required placeholder="address@domain.com" style="width: 94%;" />
             </tr>
             <tr>
-                <td class="rowHeader"><label for="selectDate">Select Date:</label></td>
-                <td class="rowContents"><input type="date" name="selectDate" onchange="validateDate()" required id="mk_res_4"></td>
-                <td class="rowContents"><input type="time" name="selectTime" required min="10:00" max="22:00" id="mk_res_5"></td>
+                <td class="rowHeader"><label for="select-date">Select Date:</label></td>
+                <td class="rowContents"><input type="date" name="select-date" required onchange="checkForHighTraffic()" id="select-date-id"></td>
+                <td class="rowContents"><input type="time" name="select-time" required onchange="checkForHighTraffic()" min="10:00" max="22:00" id="select-time-id"></td>
             </tr>
             <tr>
-                <td class="rowHeader"><label for="numGuests">Number of Guests:</label></td>
-                <td class="rowContents" colspan="2"><input type="number" required min="1" max="20" name="numGuests" id="mk_res_6" style="width: 94%;"></td>
+                <td class="rowHeader"><label for="num-guests">Number of Guests:</label></td>
+                <td class="rowContents" colspan="2"><input type="number" required min="1" max="20" name="num-guests" id="num-guests-id" style="width: 94%;"></td>
             </tr>
-			<tr style="visibility: hidden;" id="cc_row">
-				<td class="rowHeader"><label for="ccnum">Credit Card Number:</label></td>
-				<td class="rowContents">
-					<!--<div class="tooltip">
-						<span class="tooltiptext">Credit card required to reserve table on high volume days<span>-->
-						<input type="text" name="ccnum" id="mk_res_9" style="width: 94%;"></input><!--
-					</div>-->
+			<tr>
+				<td class="rowHeader" rowspan="3"><label for="cc-num">Credit Card Number:</label></td>
+				<td class="rowContents" colspan="2" style="text-align: center;">
+					<img src="/images/amex" id="img-amex-id" width="26" height="20" style="filter: grayscale(100%);" />
+					<img src="/images/visa" id="img-visa-id" width="26" height="20" style="filter: grayscale(100%);" />
+					<img src="/images/mastercard" id="img-mastercard-id" width="26" height="20" style="filter: grayscale(100%);" />
+					<img src="/images/discover" id="img-discover-id" width="24" height="20" style="filter: grayscale(100%);" />
+					<img src="/images/generic" id="img-generic-id" width="32" height="20" style="filter: grayscale(100%);" />
 				</td>
+			</tr>
+			<tr>
+				<td class="rowContents" colspan="2"><input type="text" name="cc-num" id="cc-num-id" style="width: 94%;" maxlength="16" pattern="[0-9]{16}" disabled onkeyup="creditCardCheck()" ></input></td>
+			</tr>
+			<tr>
+				<td class="rowContents"><input type="text" name="cc-expry" id="cc-expry-id" maxlength="5" pattern="[0-9]{2}/[0-9]{2}" disabled placeholder="mm/yy"></input></td>
+				<td class="rowContents"><input type="text" name="cc-cvc" id="cc-cvc-id" disabled maxlength="3" pattern="[0-9]{3}" placeholder="CVC code"></input></td>
 			</tr>
         </table>
         <button onclick="getAvailability()" id="mk_res_10" >Submit</button>
@@ -46,14 +54,106 @@
             <strong name="res_str" id="mk_res_7"></strong>
             <label id="mk_res_8"></label>
         </div>
+		<script type="text/javascript">
+			function creditCardCheck() {
+                //console.log("in onkeyup event");
+                var ccNum = document.getElementById("cc-num-id").value;
+				
+				if (ccNum != "") {
+					var c = ccNum.charAt(0);
+					
+					switch (c) {
+						case '3':
+                            //console.log("amex");
+                            document.getElementById("img-amex-id").style = "filter: grayscale(0%);";
+                            document.getElementById("img-visa-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-mastercard-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-discover-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-generic-id").style = "filter: grayscale(100%);";
+							break;
+                        case '4':
+                            //console.log("visa");
+                            document.getElementById("img-amex-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-visa-id").style = "filter: rayscale(0%);";
+                            document.getElementById("img-mastercard-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-discover-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-generic-id").style = "filter: grayscale(100%);";
+							break;
+                        case '5':
+                            //console.log("mastercard");
+                            document.getElementById("img-amex-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-visa-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-mastercard-id").style = "filter: grayscale(0%);";
+                            document.getElementById("img-discover-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-generic-id").style = "filter: grayscale(100%);";
+							break;
+                        case '6':
+                            //console.log("discover");
+                            document.getElementById("img-amex-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-visa-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-mastercard-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-discover-id").style = "filter: grayscale(0%);";
+                            document.getElementById("img-generic-id").style = "filter: grayscale(100%);";
+							break;
+                        default:
+                            //console.log("generic");
+                            document.getElementById("img-amex-id").style.filter = "filter: grayscale(100%);";
+                            document.getElementById("img-visa-id").style.filter = "filter: grayscale(100%);";
+                            document.getElementById("img-mastercard-id").style.filter = "filter: grayscale(100%);";
+                            document.getElementById("img-discover-id").style.filter = "filter: grayscale(100%);";
+                            document.getElementById("img-generic-id").style.filter = "filter: grayscale(0%);";
+							break;
+					}
+				}
+				
+				return;
+			}
+		</script>
         <script type="text/javascript">
             function addMinutes(dTim, minutes) {
 				dTim.setTime(dTim.getTime() + (minutes * 60 * 1000));
 				
 				return dTim;
-			}			
+			}	
+
+			function checkForHighTraffic() {
+				/*console.log("Hit the check");*/
+				/*console.log("Date: " + document.getElementById("select-date-id").value);
+				console.log("Time: " + document.getElementById("select-time-id").value);*/
+				
+				if (document.getElementById("select-date-id").value != "" && document.getElementById("select-time-id").value != "") {
+					/*console.log("checking fields");*/
+					
+					var dTim = new Date(document.getElementById("select-date-id").value + " " + document.getElementById("select-time-id").value);
+					
+					/*console.log(dTim.toString());*/
+					
+					var msg = "Credit card number required for high traffic days. There's $10 charge for no-shows";
+					
+					/*console.log(msg);*/
+					
+					if (isHighTrafficDay(dTim)) {
+						console.log("found high traffic day");
+						
+						document.getElementById("cc-num-id").disabled = false;
+						document.getElementById("cc-expry-id").disabled = false;
+						document.getElementById("cc-cvc-id").disabled = false;
+						
+						alert(msg);
+					}
+					else {
+						console.log("did not find high traffic day");
+					
+						document.getElementById("cc-num-id").disabled = true;
+						document.getElementById("cc-expry-id").disabled = true;
+						document.getElementById("cc-cvc-id").disabled = true;
+					}
+				}
+				
+				return;
+			}
 			
-			function validateDate() {
+			/*function validateDate() {
 				var dTim = new Date();
 				dTim.setDate(Date.parse(document.getElementById("mk_res_4").value));
 				
@@ -89,19 +189,43 @@
 					doc.getElementById("cc_row").style.visibility = "hidden";
 					doc.getElementById("cc_row").required = false;
 				}
+			}*/
+			
+			function padString(text, length, padChar, padFront = true) {
+				while (text.length < length) {
+					if (padFront) {
+						text = padChar + text;
+					}
+					else {
+						text = text + padChar;
+					}
+				}
+				
+				return text;
 			}
 			
 			function isHighTrafficDay(dTim) {
 				var d = dTim.getDay();
-				var SixPM = Date.parse("2021-09-22T18:00:00").getTime();
+				
+				var year = dTim.getFullYear().toString();
+				var month = padString(dTim.getMonth().toString(), 2, '0');
+				var day = padString(dTim.getDate().toString(), 2, '0');
+				
+				/*console.log(d.toString());*/
+				
+				var sixPM = new Date(year + '-' + month + '-' + day + "T18:00:00");
 				
 				//	check if the weekend
+				
+				console.log("6 PM: " + sixPM.toString());
+				console.log("checking weekend");
+				
 				switch (d) {
 					case 0:	//	Sunday
-					case 7:	//	Satuday
+					case 6:	//	Satuday
 						return true;
-					case 6:	//	Friday
-						if (d.getTime >= SixPM) {	//	After 6 PM
+					case 5:	//	Friday
+						if (dTim >= sixPM) {	//	After 6 PM
 							return true;
 						}
 						else {
@@ -111,26 +235,42 @@
 						break;
 				}
 				
+				//console.log("checking thanksgiving");
+				if (isThanksgiving(dTim)) {	//	check for thanksgiving
+					return true;
+				}
+				
+				//console.log("checking memorial day");
 				if (isMemorialDay(dTim)) {	//	check for memorial day
 					return true;
 				}
 				
+				//console.log("checking labor day");
 				if (isLaborDay(dTim)) {	//	check for labor day
 					return true;
 				}
 				
+				//console.log("checking new years day");
 				if (isSpecificDate(dTim, "01-01")) {	//	check for new years day
 					return true;
 				}
 				
+				//console.log("checking independence day");
 				if (isSpecificDate(dTim, "07-04")) {	//	check for independence day
 					return true;
 				}
 				
+				//console.log("checking christmas eve");
 				if (isSpecificDate(dTim, "12-24")) {	//	check for christmas eve
 					return true;
 				}
 				
+				//console.log("checking christmas day");
+				if (isSpecificDate(dTim, "12-25")) {	//	check for christmas day
+					return true;
+				}
+				
+				//console.log("checking new years eve");
 				if (isSpecificDate(dTim, "12-31")) {	//	check for new years eve
 					return true;
 				}
@@ -138,7 +278,7 @@
 				return false;
 			}
 			
-			function getAvailability() {
+			/*function getAvailability() {
                 document.getElementById("res_div").style.visibility = 'visible';
 				
 				var numGuests = document.getElementById("mk_res_6").value;
@@ -171,7 +311,7 @@
                     lbl.style.backgroundColor = "#ffc7ce";
                     lbl.style.color = "#9b0006";
                 }
-            }
+            }*/
 
             function resetPage() {
                 var str = document.getElementById("mk_res_7");
@@ -214,7 +354,7 @@
 			
 			function isMemorialDay(dTim) {
 				var year = dTim.getFullYear();
-				var checkDay = Date.parse(year.toString() + "-06-01");	//	start on June 1st
+				var checkDay = new Date(year.toString() + "-06-01");	//	start on June 1st
 				var memorialDay;
 				
 				if (checkDay.getDay() == 1) {	//	if June 1 is a Monday, subtract a week
@@ -233,10 +373,10 @@
 			
 			function isLaborDay(dTim) {
 				var year = dTim.getFullYear();
-				var checkDay = Date.parse(year.toString() + "09-01");	//	start on September 1st
+				var checkDay = new Date(year.toString() + "09-01");	//	start on September 1st
 				var laborDay;
 				
-				while (checkDays.getDay() != 1) {
+				while (checkDay.getDay() != 1) {
 					checkDay = addDays(checkDay, 1);
 				}
 				
@@ -247,15 +387,14 @@
 			
 			function isSpecificDate(dTim, monthAndDateString) {
 				var year = dTim.getFullYear();
-				var specificDate = Date.parse(year.toString() + "-" + monthAndDateString);
+				var specificDate = new Date(year.toString() + "-" + monthAndDateString);
 				
 				return (dTim.getDate() == specificDate.getDate());
 			}
 			
 			function isThanksgiving(dTim) {
 				var year = dTim.getFullYear();
-				var checkDay = new Date();
-				checkDay.setDate(Date.parse(year.toString() + "11-01"));
+				var checkDay = new Date(year.toString() + "11-01");
 				var numOfThursdays = 0;
 				
 				while (numOfThursdays < 4) {

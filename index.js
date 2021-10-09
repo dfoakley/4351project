@@ -81,6 +81,26 @@ app.get("/get-availability", function(req, res)
 	//var tablesAvailableSize2 = [JSON.Parse('{ "TableId" : 
 });
 
+app.get("/images/amex", function(req, res) {
+	res.sendFile(__dirname + "/images/amex.png");
+});
+
+app.get("/images/visa", function(req, res) {
+	res.sendFile(__dirname + "/images/visa.png");
+});
+
+app.get("/images/mastercard", function(req, res) {
+	res.sendFile(__dirname + "/images/mastercard.png");
+});
+
+app.get("/images/discover", function(req, res) {
+	res.sendFile(__dirname + "/images/discover.png");
+});
+
+app.get("/images/generic", function(req, res) {
+	res.sendFile(__dirname + "/images/generic.png");
+});
+
 //	POST method to make reservation
 app.post("/push-reservation", function(req, res)
 {
@@ -127,5 +147,9 @@ function buildTablesQuery(maxGuests, targetDateTime) {
 }
 
 app.get("*/*", function(req, res) {
+	res.sendStatus(404);
+});
+
+app.get("/images/*", function(req, res) {
 	res.sendStatus(404);
 });
