@@ -7,6 +7,7 @@ var app = express();
 
 //	helps in extracting the body portion of an incoming request stream
 var bodyparser = require("body-parser");
+var urlencodedParser = bodyparser.urlencoded({ extended: false })
 
 //	fs module, API for interacting with the file system
 var fs = require("fs");
@@ -71,7 +72,13 @@ app.get("/make-reservation", function(req, res) {
 });
 
 app.get("/registration", function(req, res) {
+	console.log('registration get')
 	res.sendFile(__dirname + "/client/registration.html");
+});
+
+app.get("/login", function(req,res){
+	console.log('login get');
+	res.sendFile(__dirname + "/client/login.html");
 });
 
 //	GET method to get availability around requested time
@@ -129,3 +136,29 @@ function buildTablesQuery(maxGuests, targetDateTime) {
 app.get("*/*", function(req, res) {
 	res.sendStatus(404);
 });
+
+var username;
+var password;
+var fullName;
+var mailingAddress;
+var billingAddress;
+
+////////////////////////////////////////////////////////////////////
+app.post('/register', urlencodedParser, function(req,res){
+	console.log("hello there")
+	username = req.body.username;
+	password = req.body.password;
+	fullName = req.body.fullname;
+	mailingAddress = req.body.mailingaddress;
+	billingAddress = req.body.billingaddress;
+
+	console.log(username);
+	console.log(password);
+	console.log(fullName);
+	console.log(mailingAddress);
+	console.log(billingAddress);
+		
+
+	
+	
+})
