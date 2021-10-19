@@ -72,12 +72,12 @@ app.get("/make-reservation", function(req, res) {
 });
 
 app.get("/registration", function(req, res) {
-	console.log('registration get')
+	console.log('registration page')
 	res.sendFile(__dirname + "/client/registration.html");
 });
 
 app.get("/login", function(req,res){
-	console.log('login get');
+	console.log('login page');
 	res.sendFile(__dirname + "/client/login.html");
 });
 
@@ -139,7 +139,8 @@ app.get("*/*", function(req, res) {
 
 var username;
 var password;
-var fullName;
+var firstName;
+var lastName
 var mailingAddress;
 var billingAddress;
 
@@ -148,7 +149,8 @@ app.post('/register', urlencodedParser, function(req,res){
 	console.log("hello there")
 	username = req.body.username;
 	password = req.body.password;
-	fullName = req.body.fullname;
+	firstName = req.body.firstName;
+	lastName = req.body.lastName;
 	mailingAddress = req.body.mailingaddress;
 	billingAddress = req.body.billingaddress;
 

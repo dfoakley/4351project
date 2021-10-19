@@ -42,7 +42,7 @@ body{
     align-items: center;
 }
 
-#username, #password, #confirm, #fullname, #mailingaddress, #billingaddress{
+#username, #password, #confirm, #fname, #lname, #mailingaddress, #billingaddress{
     width: 60%;
     height: 50%;
     display: grid;
