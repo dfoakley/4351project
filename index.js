@@ -139,8 +139,9 @@ app.get("*/*", function(req, res) {
 
 var username;
 var password;
-var firstName;
-var lastName
+var fullName;
+var email;
+var phoneNumber;
 var mailingAddress;
 var billingAddress;
 
@@ -149,14 +150,17 @@ app.post('/register', urlencodedParser, function(req,res){
 	console.log("hello there")
 	username = req.body.username;
 	password = req.body.password;
-	firstName = req.body.firstName;
-	lastName = req.body.lastName;
+	fullName = req.body.fullname;
+	email = req.body.email;
+	phoneNumber = req.body.phonenumber;
 	mailingAddress = req.body.mailingaddress;
 	billingAddress = req.body.billingaddress;
 
 	console.log(username);
 	console.log(password);
 	console.log(fullName);
+	console.log(email);
+	console.log(phoneNumber);	
 	console.log(mailingAddress);
 	console.log(billingAddress);
 		
