@@ -11,24 +11,24 @@
         <table>
             <tr>
                 <td class="rowHeader"><label for="person-name">Name:</label></td>
-                <td class="rowContents" colspan="2"><input type="text" name="person-name" id="person-name-id" required maxlength="100" style="width: 94%;" /></td>
+                <td class="rowContents" colspan="2"><input type="text" name="person_name" id="person-name-id" required maxlength="100" style="width: 94%;" /></td>
             </tr>
             <tr>
                 <td class="rowHeader"><label for="phone-number">Phone Number:</label></td>
-                <td class="rowContents" colspan="2"><input type="tel" id="phone-number-id" name="phone-number" pattern="^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$" required placeholder="(123) 456-7890" style="width: 94%;" /></td>
+                <td class="rowContents" colspan="2"><input type="tel" id="phone-number-id" name="phone_number" pattern="^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$" required placeholder="(123) 456-7890" style="width: 94%;" /></td>
             </tr>
             <tr>
                 <td class="rowHeader"><label for="email">E-mail:</label></td>
-                <td class="rowContents" colspan="2"><input type="email" name="email" id="email-id" required placeholder="address@domain.com" style="width: 94%;" />
+                <td class="rowContents" colspan="2"><input type="email" name="email" id="email-id" required placeholder="address@domain.com" pattern="[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-zA-Z]{2,4}" style="width: 94%;" />
             </tr>
             <tr>
                 <td class="rowHeader"><label for="select-date">Select Date:</label></td>
-                <td class="rowContents"><input type="date" name="select-date" required onchange="checkForHighTraffic()" id="select-date-id"></td>
-                <td class="rowContents"><input type="time" name="select-time" required onchange="checkForHighTraffic()" min="10:00" max="22:00" id="select-time-id"></td>
+                <td class="rowContents"><input type="date" name="select_date" required onchange="checkForHighTraffic()" id="select-date-id"></td>
+                <td class="rowContents"><input type="time" name="select_time" required onchange="checkForHighTraffic()" min="10:00" max="22:00" id="select-time-id"></td>
             </tr>
             <tr>
                 <td class="rowHeader"><label for="num-guests">Number of Guests:</label></td>
-                <td class="rowContents" colspan="2"><input type="number" required min="1" max="20" name="num-guests" id="num-guests-id" style="width: 94%;"></td>
+                <td class="rowContents" colspan="2"><input type="number" required min="1" max="20" name="num_guests" id="num-guests-id" style="width: 94%;"></td>
             </tr>
 			<tr>
 				<td class="rowHeader" rowspan="3"><label for="cc-num">Credit Card Number:</label></td>
@@ -41,19 +41,30 @@
 				</td>
 			</tr>
 			<tr>
-				<td class="rowContents" colspan="2"><input type="text" name="cc-num" id="cc-num-id" style="width: 94%;" maxlength="16" pattern="[0-9]{16}" disabled onkeyup="creditCardCheck()" ></input></td>
+				<td class="rowContents" colspan="2"><input type="password" name="cc_num" id="cc-num-id" style="width: 94%;" maxlength="16" pattern="[0-9]{16}" disabled onkeyup="creditCardCheck()" ></td>
 			</tr>
 			<tr>
-				<td class="rowContents"><input type="text" name="cc-expry" id="cc-expry-id" maxlength="5" pattern="[0-9]{2}/[0-9]{2}" disabled placeholder="mm/yy"></input></td>
-				<td class="rowContents"><input type="text" name="cc-cvc" id="cc-cvc-id" disabled maxlength="3" pattern="[0-9]{3}" placeholder="CVC code"></input></td>
+				<td class="rowContents"><input type="text" name="cc_expry" id="cc-expry-id" maxlength="5" pattern="[0-9]{2}/[0-9]{2}" ></td>
+				<td class="rowContents"><input type="month" name="cc_cvc" id="cc-cvc-id" disabled maxlength="3"  ></td>
 			</tr>
         </table>
-        <button onclick="getAvailability()" id="mk_res_10" >Submit</button>
+        <button onclick="isAvailable()" id="submit-id" >Submit</button>
         <button onclick="resetPage()">Reset</button>
-        <div class="alert-div" id="res_div">
+        <!--<div class="alert-div" id="res-div-id">
             <strong name="res_str" id="mk_res_7"></strong>
             <label id="mk_res_8"></label>
-        </div>
+        </div>-->
+        <script type="text/javascript">
+            function isAvailable() {
+                var date = document.getElementById("select-date-id").value;
+                var time = document.getElementById("select-time-id").value;
+                var size = document.getElementById("num-guests-id").value;
+
+                if (date != "" && time != "" && size > 0) {
+                    var dTim = new Date(date + 'T' + time);
+                }
+            }
+        </script>
 		<script type="text/javascript">
 			function creditCardCheck() {
                 //console.log("in onkeyup event");
@@ -117,20 +128,10 @@
 			}	
 
 			function checkForHighTraffic() {
-				/*console.log("Hit the check");*/
-				/*console.log("Date: " + document.getElementById("select-date-id").value);
-				console.log("Time: " + document.getElementById("select-time-id").value);*/
-				
 				if (document.getElementById("select-date-id").value != "" && document.getElementById("select-time-id").value != "") {
-					/*console.log("checking fields");*/
-					
 					var dTim = new Date(document.getElementById("select-date-id").value + " " + document.getElementById("select-time-id").value);
 					
-					/*console.log(dTim.toString());*/
-					
 					var msg = "Credit card number required for high traffic days. There's $10 charge for no-shows";
-					
-					/*console.log(msg);*/
 					
 					if (isHighTrafficDay(dTim)) {
 						console.log("found high traffic day");
@@ -153,43 +154,61 @@
 				return;
 			}
 			
-			/*function validateDate() {
-				var dTim = new Date();
-				dTim.setDate(Date.parse(document.getElementById("mk_res_4").value));
-				
-				if (document.getElementById("mk_res_5").value != "") {
-					dTim += Date.parse(document.getElementById("mk_res_5").value);
-				}
-				
-				var now = new Date();
-				
-				if (dTim < addMinutes(now, 15)) {
-					alert("Reservations must be made at least 15 minutes in advance");
-					
-					document.getElementById("mk_res_4").value = "";
-					document.getElementById("mk_res_5").value = "";
-				}
-				else if (isThanksgiving(dTim) || isSpecificDate(dTim, "12-25")) {
-					if (isThanksgiving(dTim)) {
-						alert("The restaurant is closed on Thanksgiving");
-					}
-					else {
-						alert("The restaurant is close on Christmas Day");
-					}
-					
-					document.getElementById("mk_res_4").value = "";
-					document.getElementById("mk_res_5").value = "";
-				}
-				
-				if (isHighTrafficDay(dTim)) {
-					doc.getElementById("cc_row").style.visibility = "visible";
-					doc.getElementById("cc_row").required = true;
-				}
-				else {
-					doc.getElementById("cc_row").style.visibility = "hidden";
-					doc.getElementById("cc_row").required = false;
-				}
-			}*/
+			function validateDate() {
+                var date = document.getElementById("select-date-id");
+                var time = document.getElementById("select-time-id");
+                
+                if (date.value != "" && time.value != "") {
+                    var dTim = new Date(date.value + 'T' + time.value);
+                    var now = new Date();
+                    var twentyOneFourtyFive = new Date(date.value + 'T21:45:00');
+
+                    if (isThanksgiving(dTim)) {
+                        alert("The restaurant is closed on Thanksgiving Day");
+
+                        document.getElementById("select-date-id").value = "";
+                        document.getElementById("select-time-id").value = "";
+
+                        return;
+                    }
+
+                    if (isSpecificDate(dTim, "12-25")) {
+                        alert("The restaurant is closed on Christmas Day");
+
+                        document.getElementById("select-date-id").value = "";
+                        document.getElementById("select-time-id").value = "";
+
+                        return;
+                    }
+
+                    if (isSpecificDate(dTim, "12-24")) {
+                        var eightPM = new Date(date.value + "T20:00:00");
+
+                        if (dTim >= eightPM) {
+                            alert("The restaurant closes at 8 PM on Christmas Eve");
+
+                            document.getElementById("select-date-id").value = "";
+                            document.getElementById("select-time-id").value = "";
+
+                            return;
+                        }
+                    }
+
+                    if (dTim < addMinutes(now, 15)) {
+                        alert("Reservations must be made at least 15 minutes in advance");
+
+                        if (dTim >= twentyOneFourtyFive) {
+                            document.getElementById("select-date-id").value = "";
+                        }
+
+                        document.getElementById("select-time-id").value = "";
+
+                        return;
+                    }
+                }
+
+                return;
+			}
 			
 			function padString(text, length, padChar, padFront = true) {
 				while (text.length < length) {
@@ -197,7 +216,7 @@
 						text = padChar + text;
 					}
 					else {
-						text = text + padChar;
+						text += padChar;
 					}
 				}
 				
@@ -211,14 +230,9 @@
 				var month = padString(dTim.getMonth().toString(), 2, '0');
 				var day = padString(dTim.getDate().toString(), 2, '0');
 				
-				/*console.log(d.toString());*/
-				
 				var sixPM = new Date(year + '-' + month + '-' + day + "T18:00:00");
 				
 				//	check if the weekend
-				
-				console.log("6 PM: " + sixPM.toString());
-				console.log("checking weekend");
 				
 				switch (d) {
 					case 0:	//	Sunday
@@ -235,115 +249,50 @@
 						break;
 				}
 				
-				//console.log("checking thanksgiving");
-				if (isThanksgiving(dTim)) {	//	check for thanksgiving
-					return true;
-				}
-				
-				//console.log("checking memorial day");
 				if (isMemorialDay(dTim)) {	//	check for memorial day
 					return true;
 				}
 				
-				//console.log("checking labor day");
 				if (isLaborDay(dTim)) {	//	check for labor day
 					return true;
 				}
 				
-				//console.log("checking new years day");
 				if (isSpecificDate(dTim, "01-01")) {	//	check for new years day
 					return true;
 				}
 				
-				//console.log("checking independence day");
 				if (isSpecificDate(dTim, "07-04")) {	//	check for independence day
 					return true;
 				}
 				
-				//console.log("checking christmas eve");
 				if (isSpecificDate(dTim, "12-24")) {	//	check for christmas eve
 					return true;
 				}
 				
-				//console.log("checking christmas day");
-				if (isSpecificDate(dTim, "12-25")) {	//	check for christmas day
-					return true;
-				}
-				
-				//console.log("checking new years eve");
 				if (isSpecificDate(dTim, "12-31")) {	//	check for new years eve
 					return true;
 				}
 				
 				return false;
 			}
-			
-			/*function getAvailability() {
-                document.getElementById("res_div").style.visibility = 'visible';
-				
-				var numGuests = document.getElementById("mk_res_6").value;
-				var resDate = Date.parse(document.getElementById("mk_res_4").value) + Date.parse(document.getElementById("mk_res_5").value)
-				
-                var result = isAvailable(resDate, numGuests);
-                var isRegistered = false;
-
-                var str = document.getElementById("mk_res_7");
-                var lbl = document.getElementById("mk_res_8");
-
-                str.className = "";
-                lbl.className = "";
-
-                if (result) {
-                    str.innerHTML = "&nbsp;SUCCESS! ";
-                    str.style.backgroundColor = "#c6efce";
-                    str.style.color = "#006100";
-
-                    lbl.innerHTML = "Reservation made.&nbsp;";
-                    lbl.style.backgroundColor = "#c6efce";
-                    lbl.style.color = "#006100";
-                }
-                else {
-                    str.innerHTML = "&nbsp;FAILED! ";
-                    str.style.backgroundColor = "#ffc7ce";
-                    str.style.color = "#9b0006";
-
-                    lbl.innerHTML = "Unable to accommodate your party on the selected date and time.&nbsp;";
-                    lbl.style.backgroundColor = "#ffc7ce";
-                    lbl.style.color = "#9b0006";
-                }
-            }*/
 
             function resetPage() {
-                var str = document.getElementById("mk_res_7");
-                var lbl = document.getElementById("mk_res_8");
+                document.getElementById("person-name-id").value = "";
+                document.getElementById("phone-number-id").value = "";
+                document.getElementById("email-id").value = "";
+                document.getElementById("select-date-id").value = "";
+                document.getElementById("select-time-id").value = "";
+                document.getElementById("num-guests-id").value = "";
+                document.getElementById("cc-num-id").value = "";
+                document.getElementById("cc-expry-id").value = "";
+                document.getElementById("cc-cvc-id").value = "";
 
-                str.className = "";
-                lbl.className = "";
-
-                document.getElementById("mk_res_1").value = "";
-                document.getElementById("mk_res_2").value = "";
-                document.getElementById("mk_res_3").value = "";
-                document.getElementById("mk_res_4").value = "";
-                document.getElementById("mk_res_5").value = "";
-                document.getElementById("mk_res_6").value = "";
-
-                document.getElementById("res_div").style.visibility = 'hidden';
+                document.getElementById("img-amex-id").style = "filter: grayscale(100%);";
+                document.getElementById("img-visa-id").style = "filter: grayscale(100%);";
+                document.getElementById("img-mastercard-id").style = "filter: grayscale(100%);";
+                document.getElementById("img-discover-id").style = "filter: grayscale(100%);";
+                document.getElementById("img-generic-id").style = "filter: grayscale(100%);";
             }
-			
-			function isAvailable(datetime, partysize) {
-				
-				if (isThanksgiving(datetime) || isSpecificDate(datetime, "12-25")) {
-					alert("The restaurant is closed on this day");
-					return false;
-				}
-				
-				var xhr = new XMLHttpRequest();
-				var url = "/check-availability?dtim=" + datetime.toString() + "&partysize=" + partysize.toString();
-				
-				xhr.open('POST', url, true);
-				
-				return xhr.response;
-			}
 			
 			function addDays(baseDate, days)
 			{
@@ -408,9 +357,9 @@
 				checkDay = addDays(checkDay, -1);
 				
 				return (dTim.getDate() == checkDay.getDate());
-			}
+            }
 			
-			// 	<site>Based on https://stackoverflow.com/questions/18279141/javascript-string-encryption-and-decryption
+			// 	<cite source="https://stackoverflow.com/questions/18279141/javascript-string-encryption-and-decryption">
 			const encrypt = (salt, text) => {
 				const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
 				const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2);
@@ -435,7 +384,7 @@
 					.map((charCode) => String.fromCharCode(charCode))
 					.join("");
 			};
-			//	</site>
+			//	</cite>
         </script>
     </body>	
 </html>

@@ -27,6 +27,8 @@
     "express-session": "^1.17.2",
     "fs": "0.0.1-security",
     "mysql": "^2.18.1",
-    "xml2js": "^0.4.23"
+    "url": "^0.11.0",
+    "xml2js": "^0.4.23",
+    "xmlhttprequest": "^1.8.0"
   }
 }

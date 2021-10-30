@@ -176,7 +176,3 @@ tr:nth-child(odd) {
 .tooltip:hover .tooltiptext {
 	visibility: visible;
 }
-
-.active-card {
-	filter: grayscale(0%);
-}

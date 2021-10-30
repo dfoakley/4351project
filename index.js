@@ -2,6 +2,12 @@
 //	include the express module
 var express = require("express");
 
+// include the xmlhttprequest module
+var xhttp = require("xmlhttprequest").XMLHttpRequest;
+
+//  create the request handler
+var xhr = new XMLHttpRequest();
+
 //	create an express application
 var app = express();
 
@@ -77,8 +83,13 @@ app.get("/registration", function(req, res) {
 //	GET method to get availability around requested time
 app.get("/get-availability", function(req, res)
 {
-	// dummy data
-	//var tablesAvailableSize2 = [JSON.Parse('{ "TableId" : 
+    var urlBase = "https://json-server-4351.herokuapp.com/";
+    var urlResTableBase = urlBase + "/ResTable/";
+    var urlBookTableBase = urlBase + "/BookTable/";
+    var urlBookingBase = urlBase + "/Booking/";
+
+    var dTim = new Date(req.body.select_date + 'T' + req.body.select_time);
+    var size = req.body.num_guests;
 });
 
 app.get("/images/amex", function(req, res) {
