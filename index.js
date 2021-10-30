@@ -2,11 +2,11 @@
 //	include the express module
 var express = require("express");
 
-// include the xmlhttprequest module
-var xhttp = require("xmlhttprequest").XMLHttpRequest;
+//// include the xmlhttprequest module
+//var xhttp = require("xmlhttprequest").XMLHttpRequest;
 
-//  create the request handler
-var xhr = new XMLHttpRequest();
+////  create the request handler
+//var xhr = new XMLHttpRequest();
 
 //	create an express application
 var app = express();
