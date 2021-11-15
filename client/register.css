@@ -42,7 +42,7 @@ body{
     align-items: center;
 }
 
-#username, #password, #confirm, #fullname, #email, #phonenumber, #mailingaddress, #billingaddress{
+#userName, #passWord, #confirm, #fname, #email, #phoneNumber, #mailingAddress, #billingAddress, #dinerNumber, #id, #points, #preferredPayment{
     width: 60%;
     height: 50%;
     display: grid;
@@ -51,11 +51,12 @@ body{
     align-self: flex-start;
     border: none;
     border-bottom: 1px solid #3a3a3a;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
     border-radius: 3px;
     outline: none;
     padding: 0px 0px 5px 5px;
 }
+
 
 #username::placeholder, #password::placeholder{
     color: #3a3a3a;

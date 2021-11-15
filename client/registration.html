@@ -9,23 +9,35 @@
 </head>
 <body>
     <h1>Register Your Account</h1>
-    <form id = "reg-form" method = "POST" action ="/register" onsubmit = "return Validation()">
+    <form id = "reg-form" method = "POST" action ="javascript:postUser()" onsubmit = "return Validation()">
         <div class="main-holder" id="signup-form">
-            <input type="text" placeholder="Username" name="username" id="username" required>
+            <input type="text" placeholder="Username" name="userName" id="userName" required>
 
-            <input type="password" placeholder="Password" name="password" id="password" required>
+            <input type="password" placeholder="Password" name="passWord" id="passWord" required>
             
             <input type="password" placeholder="Confirm Password" name="confirm" id="confirm" required>
 
-            <input type="text" placeholder = "Full Name" name="fullname" id="fullname" required>
+            <input type="text" placeholder = "Full Name" name="fname" id="fname" required>
 
             <input type="text" placeholder = "johndoe@gmail.com" name = "email" id = "email" required>
 
-            <input type="text" placeholder = "Phone Number" name = "phonenumber" id = "phonenumber" required>
+            <!--input type="text" placeholder = "Diner Number" name = "dinerNumber" id = "dinerNumber"-->
 
-            <input type="text" placeholder="Mailing Address" name="mailingaddress" id="mailingaddress" required>
+            <input type="text" placeholder = "Phone Number" name = "phoneNumber" id = "phoneNumber" required>
 
-            <input type="text" placeholder="Billing Address" name="billingaddress" id="billingaddress" required>
+            <!--input type="text" placeholder = "ID" name = "id" id = "id" required-->
+
+            <!--input type="text" placeholder = "Points" name = "points" id = "points" required-->
+
+            <!--input type="text" placeholder = "Preferred Payment" name = "preferredPayment" id = "preferredPayment" required-->
+
+            <input type="text" placeholder="Billing Address" name="billingAddress" id="billingAddress" required>
+            
+            <input type="text" placeholder="Mailing Address" name="mailingAddress" id="mailingAddress" required>
+
+
+
+
 
 
 
@@ -42,9 +54,11 @@
          
     </form>
 
+    
+
     <script>
         function Validation(){
-            var pw1 = document.getElementById("password").value 
+            var pw1 = document.getElementById("passWord").value 
             var pw2 = document.getElementById("confirm").value
             if(pw1 != pw2)  
             {   
@@ -52,16 +66,93 @@
                 return false;
             } else {  
                 alert("Password created successfully")
-                return true;
-            }  
+               // return true;
+               /*
+                var url = "https://json-server-4351.herokuapp.com/User/";
+
+	
+		var formElements = document.forms['reg-form'].elements
+
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", url);
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.setRequestHeader("Content-Type", "application/json");
+
+		xhr.onreadystatechange = function () {
+		if (xhr.readyState === 4) {
+			console.log(xhr.status);
+			console.log(xhr.responseText);
+		}};
+
+
+
+		var data = {
+            "billingAddress": formElements['billingAddress'].value,
+            "dinerNumber": parseInt(formElements['dinerNumber'].value),
+            "email": formElements['email'].value,
+            "id": parseInt(formElements['id'].value),
+            "mailingAddress": formElements['mailingaddress'].value,
+            "name": formElements['fname'].value,
+            "passWord": formElements['passWord'].value,
+            "phoneNumber": parseInt(formElements['phoneNumber'].value),
+            "points": parseInt(formElements['points'].value),
+            "preferredPayment": formElements['preferredPayment'].value,
+            "userName": formElements['userName'].value
         }
+		console.log("sending", data);
+
+		xhr.send(JSON.stringify(data));
+		var response = xhr.responseText;
+		console.log(response);
+*/
+        //window.location.href="login";
+        return true;
+	}
+                
+    }
+    
+        
     </script>  
 
-    <script>
-        function postUser(){
+<script type="text/javascript">
+	var url = "https://json-server-4351.herokuapp.com/User/";
 
-        }
-    </script>
+	function postUser() {
+		var formElements = document.forms['reg-form'].elements
+
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", url);
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.setRequestHeader("Content-Type", "application/json");
+
+		xhr.onreadystatechange = function () {
+		if (xhr.readyState === 4) {
+			console.log(xhr.status);
+			console.log(xhr.responseText);
+		}};
+
+
+
+		var data = {
+  "billingAddress": formElements['billingAddress'].value,
+  "dinerNumber": parseInt(formElements['dinerNumber'].value),
+  "email": formElements['email'].value,
+  "id": parseInt(formElements['id'].value),
+  "mailingAddress": formElements['mailingAddress'].value,
+  "name": formElements['fname'].value,
+  "passWord": formElements['passWord'].value,
+  "phoneNumber": parseInt(formElements['phoneNumber'].value),
+  "points": parseInt(formElements['points'].value),
+  "preferredPayment": formElements['preferredPayment'].value,
+  "userName": formElements['userName'].value
+}
+		console.log("sending", data);
+
+		xhr.send(JSON.stringify(data));
+		var response = xhr.responseText;
+		console.log(response);
+	}
+</script>
         <script>
         /*
         function matchPassword() {  

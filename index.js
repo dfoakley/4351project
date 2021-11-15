@@ -63,8 +63,8 @@ app.get("/", function(req, res) {
 	res.sendFile(__dirname + "/client/landingpage.html");
 });
 
-app.get("/landingpage", function(req, res) {
-	res.sendFile(__dirname + "/client/landingpage.html");
+app.get("/landing-page", function(req, res) {
+	res.sendFile(__dirname + "/client/landing-page.html");
 });
 
 app.get("/make-reservation", function(req, res) {
@@ -141,26 +141,38 @@ var username;
 var password;
 var fullName;
 var email;
+var dinerNumber;
 var phoneNumber;
+var id;
+var points;
+var preferredPayment;
 var mailingAddress;
 var billingAddress;
 
 ////////////////////////////////////////////////////////////////////
 app.post('/register', urlencodedParser, function(req,res){
 	console.log("hello there")
-	username = req.body.username;
-	password = req.body.password;
-	fullName = req.body.fullname;
+	username = req.body.userName;
+	password = req.body.passWord;
+	fullName = req.body.fname;
 	email = req.body.email;
-	phoneNumber = req.body.phonenumber;
-	mailingAddress = req.body.mailingaddress;
-	billingAddress = req.body.billingaddress;
+	dinerNumber = req.body.dinerNumber;
+	phoneNumber = req.body.phoneNumber;
+	id = req.body.id;
+	points = req.body.points;
+	preferredPayment = req.body.points;
+	mailingAddress = req.body.mailingAddress;
+	billingAddress = req.body.billingAddress;
 
 	console.log(username);
 	console.log(password);
 	console.log(fullName);
 	console.log(email);
-	console.log(phoneNumber);	
+	console.log(dinerNumber);
+	console.log(phoneNumber);
+	console.log(id);
+	console.log(points)
+	console.log(preferredPayment);;	
 	console.log(mailingAddress);
 	console.log(billingAddress);
 		

@@ -9,13 +9,87 @@
 </head>
 <body>
     <h1>Login</h1>
-    <form id="login-form" method="POST" action="/">
-        <input type="text" name="username" id="username" class="login-form-field" placeholder="Username" required="">
-        <input type="password" name="password" id="password" class="login-form-field" placeholder="Password" required="">
+    <form id="login-form" method="POST" action="javascript:getUser()">
+        <input type="text" name="userName" id="userName" class="login-form-field" placeholder="Username" required="">
+        <input type="password" name="passWord" id="passWord" class="login-form-field" placeholder="Password" required="">
         <hr>
         <p>New user? Sign up <a href="registration"> here</a>.</p>
         <p><i><a href="forgetpwd.html">Forget your password?</a></i></p>
         <button type="submit" id="loginbtn" >Login</button>
       </form>
+
+      <!--form name="getForm" class="" action="javascript:getUser()" method="post">
+        <label for="fname">UserId:</label><br>
+        <input type="text" id="userNumber" name="userNumber"><br>
+        <input type="text" name="userName" id="userName" class="login-form-field" placeholder="Username" required="">
+        <input type="password" name="passWord" id="passWord" class="login-form-field" placeholder="Password" required="">
+        <input type="submit">
+      </form-->
+    </body>
+  </html>
+
+
+
+
+
+      <script type="text/javascript">
+        const form = document.getElementById('login-form');
+      </script>
+      <script type="text/javascript">
+        //var passWord = document.getElementById['passWord'].value
+        var result;
+        function getUser() {
+            var formElements = document.forms['login-form'].elements;
+            var url = "https://json-server-4351.herokuapp.com/User/getUserName/" + formElements['userName'].value;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url);
+            xhr.setRequestHeader("Accept", "application/json");
+            xhr.setRequestHeader("Content-Type", "application/json");
+    
+            xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                console.log(xhr.status);
+                console.log(xhr.responseText);
+                result = JSON.parse(xhr.responseText);
+                
+                var passWord = document.getElementById('passWord').value
+                if(passWord == result.passWord){
+                console.log("Succesfully logged in")
+                 }
+                 else if(passWord != result.passWord){
+                   console.log("Password does not match Username.")
+                 }
+                
+                console.log(result.passWord);
+                //console.log(xhr.responseText["passWord"]);
+            }};
+    
+    
+    
+            var data = {
+             // "userNumber": formElements['userNumber'].value
+             "userName": formElements['userName'].value
+              
+            }
+            console.log("sending", data);
+    
+            xhr.send(data);
+
+            
+              /*  
+            var passWord = document.getElementById('passWord').value
+            
+            if(passWord == result.passWord){
+              console.log("Succesfully logged in")
+            }
+            */
+
+            
+            var response = xhr;
+            console.log(response);
+        }
+
+
+    </script>
 </body>
 </html>
