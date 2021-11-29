@@ -31,6 +31,8 @@ var xml2js = require("xml2js");
 
 var xmlParser = xml2js.parseString;
 
+var jquery = require('jquery');
+
 //	use express-session
 app.use(session({
 	secret: "group18",
@@ -117,6 +119,10 @@ app.get("/images/discover", function(req, res) {
 
 app.get("/images/generic", function(req, res) {
 	res.sendFile(__dirname + "/images/generic.png");
+});
+
+app.get("/images/atomic", function (req, res) {
+    res.sendFile(__dirname + "/images/atomic");
 });
 
 //	POST method to make reservation
