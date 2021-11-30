@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link rel="stylesheet" href="../client/register.css">
+    <script defer src = "../client/registration.js"></script>
+    
 </head>
 <body>
     <h1>Register Your Account</h1>
-    <form id = "reg-form" method = "POST" action ="javascript:postUser()" onsubmit = "return Validation()">
+    <form id = "reg-form" method = "POST" action ="javascript:postUser()" onsubmit="Validation()">
         <div class="main-holder" id="signup-form">
             <input type="text" placeholder="Username" name="userName" id="userName" required>
 
@@ -29,7 +31,7 @@
 
             <!--input type="text" placeholder = "Points" name = "points" id = "points" required-->
 
-            <!--input type="text" placeholder = "Preferred Payment" name = "preferredPayment" id = "preferredPayment" required-->
+            <input type="text" placeholder = "Preferred Payment" name = "preferredPayment" id = "preferredPayment" required>
 
             <input type="text" placeholder="Billing Address" name="billingAddress" id="billingAddress" required>
             
@@ -55,58 +57,30 @@
     </form>
 
     
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js" integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        
+        
         function Validation(){
             var pw1 = document.getElementById("passWord").value 
             var pw2 = document.getElementById("confirm").value
             if(pw1 != pw2)  
             {   
                 alert("Passwords did not match")
+                
                 return false;
             } else {  
                 alert("Password created successfully")
-               // return true;
-               /*
-                var url = "https://json-server-4351.herokuapp.com/User/";
+                return true;
+                
+               
+               
+               
 
-	
-		var formElements = document.forms['reg-form'].elements
-
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", url);
-		xhr.setRequestHeader("Accept", "application/json");
-		xhr.setRequestHeader("Content-Type", "application/json");
-
-		xhr.onreadystatechange = function () {
-		if (xhr.readyState === 4) {
-			console.log(xhr.status);
-			console.log(xhr.responseText);
-		}};
-
-
-
-		var data = {
-            "billingAddress": formElements['billingAddress'].value,
-            "dinerNumber": parseInt(formElements['dinerNumber'].value),
-            "email": formElements['email'].value,
-            "id": parseInt(formElements['id'].value),
-            "mailingAddress": formElements['mailingaddress'].value,
-            "name": formElements['fname'].value,
-            "passWord": formElements['passWord'].value,
-            "phoneNumber": parseInt(formElements['phoneNumber'].value),
-            "points": parseInt(formElements['points'].value),
-            "preferredPayment": formElements['preferredPayment'].value,
-            "userName": formElements['userName'].value
-        }
-		console.log("sending", data);
-
-		xhr.send(JSON.stringify(data));
-		var response = xhr.responseText;
-		console.log(response);
-*/
         //window.location.href="login";
-        return true;
+        //return true;
+       // setTimeout(function() {window.location = "login" });
+        
 	}
                 
     }
@@ -115,10 +89,57 @@
     </script>  
 
 <script type="text/javascript">
+    
 	var url = "https://json-server-4351.herokuapp.com/User/";
+
+    var urlGetAllUsers = "https://json-server-4351.herokuapp.com/User/getAllUsers";
+
+
+    let x = Math.floor((Math.random() * 99999999999999999) + 1);
+
+   
+
+    if(!localStorage.getItem('userUID') && !localStorage.getItem('dinerUID')){
+    //set items here
+        localStorage.setItem("userUID", "0");
+        localStorage.setItem("dinerUID", "0");
+}
+       
 
 	function postUser() {
 		var formElements = document.forms['reg-form'].elements
+        
+
+        var users;
+        let IDNumber = 0;
+        //localStorage.clear();
+
+        
+        
+        // GET Request.
+        fetch(urlGetAllUsers,  {
+            method: "GET",
+            headers: {"Content-type": "application/json;charset=UTF-8"}})
+            // Handle success
+            .then(response => response.json())  // convert to json
+            .then(json => users = json)
+            .then(() => console.log(users))
+            .then(() => IDNumber = users.length-1)
+            //.then(() => localStorage.clear())
+            .then(() => localStorage.setItem("IDNumber", users.length))
+            .then(() => console.log("local storage: " + localStorage.getItem("IDNumber")))
+            .then(() => console.log("IDNumber: "+ IDNumber))
+            .then(() => console.log("users. length: " + users.length))
+            .catch(err => console.log('Request Failed', err)); // Catch errors
+            
+            console.log(localStorage.getItem("IDNumber"));
+            
+            
+
+           
+        
+      //  var testID = getUserID();
+       // console.log("hello", testID);
 
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", url);
@@ -131,59 +152,57 @@
 			console.log(xhr.responseText);
 		}};
 
+        var crypt ={
+            secret: "THESECRET",
+            encrypt: function(clear){
+                var cipher = CryptoJS.AES.encrypt(clear, crypt.secret);
+                cipher = cipher.toString();
+                return cipher;
+            }
+        }
 
+        var cipher = crypt.encrypt(formElements['passWord'].value);
+        console.log(cipher)
 
 		var data = {
   "billingAddress": formElements['billingAddress'].value,
-  "dinerNumber": parseInt(formElements['dinerNumber'].value),
+  "dinerNumber": parseInt(localStorage.getItem('dinerUID')),
+  //"dinerNumber": parseInt(Math.floor((Math.random() * 999999) + 1)),
+  //"dinerNumber": parseInt(formElements['dinerNumber'].value),
   "email": formElements['email'].value,
-  "id": parseInt(formElements['id'].value),
+  "id": parseInt(localStorage.getItem('userUID')),
+  //"id": parseInt(localStorage.getItem("IDNumber")),
+  //"id": parseInt(formElements['id'].value),
   "mailingAddress": formElements['mailingAddress'].value,
   "name": formElements['fname'].value,
-  "passWord": formElements['passWord'].value,
+  "passWord": cipher,
   "phoneNumber": parseInt(formElements['phoneNumber'].value),
-  "points": parseInt(formElements['points'].value),
+  "points": 0,
+  //"points": parseInt(formElements['points'].value),
   "preferredPayment": formElements['preferredPayment'].value,
   "userName": formElements['userName'].value
 }
+
+
+        var _uid = parseInt(localStorage.getItem("userUID"));
+        localStorage.setItem("userUID", ++_uid);
+
+        var _did = parseInt(localStorage.getItem("dinerUID"));
+        localStorage.setItem("dinerUID", ++_did);
+        
+        
+
+        //localStorage.clear();
 		console.log("sending", data);
 
 		xhr.send(JSON.stringify(data));
 		var response = xhr.responseText;
 		console.log(response);
+     
 	}
+    
 </script>
-        <script>
-        /*
-        function matchPassword() {  
-            var pw1 = document.getElementById("password").value 
-            var pw2 = document.getElementById("confirm").value
-            if(pw1 != pw2)  
-            {   
-                alert("Passwords did not match")
-            } else {  
-                alert("Password created successfully")
-            }  
-        }  
-        */
-        /*
-        const form = document.getElemenyById('reg-form')
-        form.addEventListener('submit', registerUser)
-
-        async function registerUser(event){
-            event.preventDefault()
-            const username = document.getElementById("username").value
-            const password = document.getElementById("password").value
-            const body = {username,password}
-
-            const result = await fetch('http://localhost:9001/register' ,{
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(body)
-            }).then((res)=> res.json())
-        }
-        */
-       </script>
+        
    
 </body>
 </html>

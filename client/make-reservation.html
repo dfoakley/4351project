@@ -6,9 +6,9 @@
 			<a href="/make-reservation"><span>Make a reservation</span></a>
 		</div>
 	</head>
-    <body>
+    <body onload="myFunction()">
         <h1>Make a Reservation</h1>
-        <table>
+        <table id = "table">
             <tr>
                 <td class="rowHeader"><label for="person_name">Name:</label></td>
                 <td class="rowContents" colspan="2"><input type="text" name="person_name" id="mk_res_1" required maxlength="100" style="width: 94%;" /></td>
@@ -47,6 +47,13 @@
             <label id="mk_res_8"></label>
         </div>
         <script type="text/javascript">
+			function myFunction(){
+				document.getElementById("table").rows[0].cells[1].innerHTML = localStorage.getItem('name');
+				console.log("hello");
+			}
+
+			
+
             function addMinutes(dTim, minutes) {
 				dTim.setTime(dTim.getTime() + (minutes * 60 * 1000));
 				
