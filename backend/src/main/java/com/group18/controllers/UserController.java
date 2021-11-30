@@ -1,6 +1,7 @@
 package com.group18.controllers;
 
 import com.group18.dto.UserBean;
+import com.group18.entities.ResTable;
 import com.group18.entities.User;
 import com.group18.service.UserService;
 import lombok.NonNull;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/User")
 @CrossOrigin
@@ -16,12 +19,28 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @GetMapping(value = "/{userNumber}", produces = "application/json")
+    @GetMapping(value = "/getUserId/{id}", produces = "application/json")
     public ResponseEntity<User> getUserByNumber (
-        @PathVariable("userNumber") Integer userNumber
+        @PathVariable("id") Integer id
     ) {
-        User user = userService.getUser(userNumber);
+        User user = userService.getUser(id);
         return new ResponseEntity<User>(user, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/getUserName/{userName}", produces = "application/json")
+    public ResponseEntity<User> getUserName (
+            @PathVariable("userName") String userName
+    ) {
+        User user = userService.getUsername(userName);
+        return new ResponseEntity<User>(user, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/getAllUsers", produces = "application/json")
+    public ResponseEntity<List<User>> getAllUsers (
+
+    ) {
+        List<User> user = userService.getAllUsers();
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping(value = "/", produces = "application/json")

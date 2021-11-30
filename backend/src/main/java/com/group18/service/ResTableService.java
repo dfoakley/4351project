@@ -23,6 +23,10 @@ public class ResTableService {
         }
     }
 
+    public List<ResTable> getAllTables() {
+        return repository.findAll();
+    }
+
     public List<ResTable> getAvailableTables() {
         List<ResTable> resTable = repository.findAllByIsReserved(false);
         return resTable;
@@ -44,10 +48,7 @@ public class ResTableService {
         return tablesReserved;
     }
 
-//    public boolean canCombine(Integer tableCount) {
-//        List<ResTable> resTables = repository.findAllByIsReserved(false);
-//
-//    }
+    public void deleteAllResTables() { repository.deleteAll(); }
 
     public void createTable(ResTable resTable) { repository.save(resTable); }
 }

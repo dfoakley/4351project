@@ -11,10 +11,10 @@ import javax.persistence.Id;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResTable {
+public class GuestUser {
     @Id
-    private Integer tableNumber;
-    private Integer maxGuests;
-    private boolean isReserved;
-    private Integer bookingNumber;
+    private Integer id;
+    private String name;
+    private Integer phoneNumber;
+    private String email;
 }
