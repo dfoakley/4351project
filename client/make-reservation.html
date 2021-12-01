@@ -12,6 +12,7 @@
     <body>
         <div class="ribbon">
             <br />
+            <button id="removeLinkDecoration"><a href ="landing-page">Home</a></button>
             <button id= "button-log-in" onclick= "location.href = 'login'">Login</button>
             <button id = "button-log-out" class ="hiddenElement" onclick="logout()">Logout</button>
         </div>
@@ -27,20 +28,21 @@
                 <input type="number" class="field" required min="1" max="20" name="input-num-guests" id="input-num-guests-id" placeholder="Number of Guests" disabled title="Required. Must be an integer between 1 and 20" onfocusout="checkNumGuests()"/>
                 <input type="password" class="field" name="cc-num" id="cc-num-id" maxlength="16" pattern="[0-9]{16}" disabled onkeyup="updateCreditCardImages()" onfocusout="checkCreditCard()" placeholder="Credit Card Number" title="Required. Should be a 16 digit string of integer characters" />
                 <div class="image-row">
-                    <img src="/images/amex" id="img-amex-id" width="26" height="20" class="notActiveImage" />
-                    <img src="/images/visa" id="img-visa-id" width="26" height="20" class="notActiveImage" />
-                    <img src="/images/mastercard" id="img-mastercard-id" width="26" height="20" class="notActiveImage" />
-                    <img src="/images/discover" id="img-discover-id" width="24" height="20" class="notActiveImage" />
-                    <img src="/images/generic" id="img-generic-id" width="32" height="20" class="notActiveImage" />
+                    <img src="/images/amex" id="img-amex-id" width="26" height="20" style="filter: grayscale(100%);" />
+                    <img src="/images/visa" id="img-visa-id" width="26" height="20" style="filter: grayscale(100%);" />
+                    <img src="/images/mastercard" id="img-mastercard-id" width="26" height="20" style="filter: grayscale(100%);" />
+                    <img src="/images/discover" id="img-discover-id" width="24" height="20" style="filter: grayscale(100%);" />
+                    <img src="/images/generic" id="img-generic-id" width="32" height="20" style="filter: grayscale(100%);" />
                 </div>
                 <input type="text" class="field" name="cc-expry" id="cc-expry-id" maxlength="5" disabled pattern="[0-9]{2}/[0-9]{2}" placeholder="Expiration Date (MM/YY)" onfocusout="checkCreditCardExpry()" title="Select your expiration date (MM/YY)" />
                 <input type="text" class="field" name="cc-cvc" id="cc-cvc-id" disabled maxlength="3" placeholder="Security Code" onfocusout="checkCreditCardSecCode()" title="Enter your security code. A string of 4 integer characters for American Express, 3 integer characters for all others."/>
                 <button type="button" onclick="isAvailable()" id="button-submit" disabled>Submit</button>
-                <button type="reset" id="button-reset">Reset</button>
+                <button type="button" id="button-reset" onclick="resetPage()">Reset</button>
                 <br /><br /><br /><br />
-                <button class="hiddenElement" type="button" id="button-admin" onclick="adminClick()">Admin</button>
-                <input class="hiddenElement" type="password" id="input-admin-pwd-id" placeholder="Admin Password" onfocusout="checkAdminPwd()" />
-                <button class="hiddenElement" type="button" id="button-test" onclick="testClick()">Test</button>
+                <button type="button" id="button-admin" onclick="adminClick()">Admin</button>
+                <input class="hiddenElement" type="password" id="input-admin-pwd-id" placeholder="Admin Password" />
+                <button class="hiddenElement" type="button" id="button-check-pwd" onclick="checkAdminPwd()">Check</button>
+                <button class="hiddenElement" type="button" id="button-test" onclick="testClick()">Run Tests</button>
             </div>
         </form>
         <script type="text/javascript">
@@ -55,26 +57,39 @@
             function adminClick() {
                 if (!inAdminMode) {
                     document.getElementById("input-admin-pwd-id").classList.remove("hiddenElement");
+                    document.getElementById("button-check-pwd").classList.remove("hiddenElement");
                     inAdminMode = true;
                 } else {
                     document.getElementById("input-admin-pwd-id").classList.add("hiddenElement");
+                    document.getElementById("button-check-pwd").classList.add("hiddenElement");
+                    document.getElementById("button-check-pwd").value = "";
+                    document.getElementById("button-test").classList.add("hiddenElement");
+                    inAdminMode = false;
                 }
             }
 
             function checkAdminPwd() {
-                if (document.getElementById("input-admin-pwd-id").value = "") {
+                if (document.getElementById("input-admin-pwd-id").value != "") {
+                    console.log("checking pwd");
                     if (encrypt(salt, document.getElementById("input-admin-pwd-id").value) == encryptedAdminPwd) {
+                        console.log("in admin mode");
                         document.getElementById('button-test').classList.remove("hiddenElement");
                     } else {
+                        console.log("not in admin mode");
                         document.getElementById('button-test').classList.add("hiddenElement");
                     }
                 }
             }
 
-            function testClick() {
-                initialActions();
-                runTests();
-                finalActions();
+            async function testClick() {
+                console.log("tables:", tables);
+                await initialActions();
+                await runTests();
+
+                console.log("passed:", passed);
+                console.log("failed:", failed);
+
+                await finalActions();
             }
 
             async function initialActions() {
@@ -90,7 +105,12 @@
 
                 if (bookings) {
                     if (bookings.length > 0) {
-                        oldBookings = bookings;
+                        var n = bookings.length;
+                        oldBookings = [];
+
+                        for (var i = 0; i < n; i++) {
+                            oldBookings.push(bookings[i]);
+                        }
                     }
                 }
 
@@ -98,7 +118,12 @@
 
                 if (tables) {
                     if (tables.length > 0) {
-                        oldTables = tables;
+                        var n = tables.length;
+                        oldTables = [];
+
+                        for (var i = 0; i < n; i++) {
+                            oldTables.push(tables[i]);
+                        }
                     }
                 }
 
@@ -113,8 +138,6 @@
                     method: "DELETE",
                     headers: { "Accept": "*/*" }
                 })
-                    .then(response => response.json())
-                    .then(json => console.log(json))
                     .catch(err => console.log(err));
             }
 
@@ -125,12 +148,10 @@
                     method: "DELETE",
                     headers: { "Accept": "*/*" }
                 })
-                    .then(response => response.json())
-                    .then(json => console.log(json))
                     .catch(err => console.log(err));
             }
 
-            function runTests() {
+            async function runTests() {
                 //  Name tests
                 test1_NameRequired();
                 test2_NameTooLong();
@@ -138,7 +159,7 @@
 
                 //  Phone Number tests
                 test4_PhoneNumberRequired();
-                test5_PhoneNumberWrongPattern();
+                //test5_PhoneNumberWrongPattern();
                 test6_PhoneNumberCorrect();
 
                 //  E-mail tests
@@ -178,7 +199,27 @@
                 test30_CCnumRequired();
                 test31_CCNumWrongPattern();
                 test32_CCNumCorrect();
-                test33_CCNumImages();
+                //test33_CCNumImages();
+
+                //  Credit Card Expiry tests
+                test34_CCExpRequired();
+                test35_CCExpCorrect();
+
+                //  Credit Card CVC tests
+                test36_CCCvcRequired();
+                test37_CCCvcAmexWrongPattern();
+                test38_CCCvcWrongPattern();
+                test39_CCCvcAmexCorrect();
+                test40_CCCvcCorrect();
+
+                //  Booking tests
+                await test41_PartyOf2();
+                await test42_PartyOf4();
+                await test43_PartyOf6();
+                await test44_PartyOf8();
+                await test45_PartyOf12();
+                await test46_PartyOf4HighTraffic();
+                await test47_BookingFailed();
             }
 
             function test1_NameRequired() {
@@ -326,8 +367,9 @@
             function test11_DateInThePast() {
                 var field = "select-date-id";
                 var testId = 11;
+                var dTim = addDays((new Date()), -1);
 
-                document.getElementById(field).value = addDays((new Date()), -1).toString();
+                document.getElementById(field).value = dateString(dTim.getFullYear(), dTim.getMonth() + 1, dTim.getDate());
                 checkDate();
 
                 if (document.getElementById(field).classList.contains("errorState")) {
@@ -343,8 +385,9 @@
             function test12_DateCorrect() {
                 var field = "select-date-id";
                 var testId = 12;
+                var dTim = addDays((new Date()), 1);
 
-                document.getElementById(field).value = addDays((new Date()), 1).toString();
+                document.getElementById(field).value = dateString(dTim.getFullYear(), dTim.getMonth() + 1, dTim.getDate());
                 checkDate();
 
                 if (document.getElementById(field).classList.contains("errorState")) {
@@ -372,7 +415,9 @@
                 document.getElementById(fieldDate).value = nextWeekend.getFullYear() + '-' + padString((nextWeekend.getMonth() + 1).toString(), 2, '0') + '-' + padString(nextWeekend.getDate().toString(), 2, '0');
                 document.getElementById(fieldTime).value = "12:00:00";
 
-                if (!isHighTrafficDay()) {
+                var dTim = new Date(document.getElementById(fieldDate).value + 'T' + document.getElementById(fieldTime).value)
+
+                if (!isHighTrafficDay(dTim)) {
                     failed.push(testId);
                 } else {
                     passed.push(testId);
@@ -403,9 +448,9 @@
                 }
 
                 document.getElementById(fieldDate).value = memorialDay.getFullYear().toString() + '-05-' + padString(memorialDay.getDate().toString(), 2, '0');
-                document.getElementById(fieldTime).value = "12:00:00";
+                var dTim = new Date(document.getElementById(fieldDate).value + 'T12:00:00')
 
-                if (!isHighTrafficDay()) {
+                if (!isHighTrafficDay(dTim)) {
                     failed.push(testId);
                 } else {
                     passed.push(testId);
@@ -433,7 +478,9 @@
                 document.getElementById(fieldDate).value = laborDay.getFullYear() + '-09-' + padString(laborDay.getDate().toString(), 2, '0');
                 document.getElementById(fieldTime).value = "12:00:00";
 
-                if (!isHighTrafficDay()) {
+                var dTim = new Date(document.getElementById(fieldDate).value + 'T' + document.getElementById(fieldTime).value)
+
+                if (!isHighTrafficDay(dTim)) {
                     failed.push(testId);
                 } else {
                     passed.push(testId);
@@ -454,7 +501,9 @@
                 document.getElementById(fieldDate).value = newYearsDay.getFullYear() + '-01-01';
                 document.getElementById(fieldTime).value = "12:00:00";
 
-                if (!isHighTrafficDay()) {
+                var dTim = new Date(document.getElementById(fieldDate).value + 'T' + document.getElementById(fieldTime).value)
+
+                if (!isHighTrafficDay(dTim)) {
                     failed.push(testId);
                 } else {
                     passed.push(testId);
@@ -475,7 +524,9 @@
                 document.getElementById(fieldDate).value = july4.getFullYear() + '-07-04';
                 document.getElementById(fieldTime).value = "12:00:00";
 
-                if (!isHighTrafficDay()) {
+                var dTim = new Date(document.getElementById(fieldDate).value + 'T' + document.getElementById(fieldTime).value)
+
+                if (!isHighTrafficDay(dTim)) {
                     failed.push(testId);
                 } else {
                     passed.push(testId);
@@ -496,7 +547,9 @@
                 document.getElementById(fieldDate).value = xmasEve.getFullYear() + '-12-24';
                 document.getElementById(fieldTime).value = "12:00:00";
 
-                if (!isHighTrafficDay()) {
+                var dTim = new Date(document.getElementById(fieldDate).value + 'T' + document.getElementById(fieldTime).value)
+
+                if (!isHighTrafficDay(dTim)) {
                     failed.push(testId);
                 } else {
                     passed.push(testId);
@@ -517,7 +570,9 @@
                 document.getElementById(fieldDate).value = xmasEve.getFullYear() + '-12-31';
                 document.getElementById(fieldTime).value = "12:00:00";
 
-                if (!isHighTrafficDay()) {
+                var dTim = new Date(document.getElementById(fieldDate).value + 'T' + document.getElementById(fieldTime).value)
+
+                if (!isHighTrafficDay(dTim)) {
                     failed.push(testId);
                 } else {
                     passed.push(testId);
@@ -536,10 +591,10 @@
                 var dTim = addDays(datePart(new Date()), 1);
                 dTim = addMinutes(dTim, 23 * 60);
 
-                document.getElementById(fieldDate).value = xmasEve.getFullYear() + padString((dTim.getMonth() + 1).toString(), 2, '0') + padString(dTim.getDate().toString(), 2, '0');
+                document.getElementById(fieldDate).value = dTim.getFullYear() + '-' + padString((dTim.getMonth() + 1).toString(), 2, '0') + '-' + padString(dTim.getDate().toString(), 2, '0');
                 document.getElementById(fieldTime).value = "23:00:00";
 
-                if (validateDate()) {
+                if (validateDate(false)) {
                     failed.push(testId);
                 } else {
                     passed.push(testId);
@@ -558,10 +613,10 @@
                 var dTim = addDays(datePart(new Date()), 1);
                 dTim = addMinutes(dTim, 8 * 60);
 
-                document.getElementById(fieldDate).value = xmasEve.getFullYear() + padString((dTim.getMonth() + 1).toString(), 2, '0') + padString(dTim.getDate().toString(), 2, '0');
+                document.getElementById(fieldDate).value = dTim.getFullYear() + '-' + padString((dTim.getMonth() + 1).toString(), 2, '0') + '-' + padString(dTim.getDate().toString(), 2, '0');
                 document.getElementById(fieldTime).value = "08:00:00";
 
-                if (validateDate()) {
+                if (validateDate(false)) {
                     failed.push(testId);
                 } else {
                     passed.push(testId);
@@ -582,7 +637,7 @@
                 document.getElementById(fieldDate).value = xmasDay.getFullYear().toString() + '-12-25';
                 document.getElementById(fieldTime).value = "12:00:00";
 
-                if (validateDate()) {
+                if (validateDate(false)) {
                     failed.push(testId);
                 } else {
                     passed.push(testId);
@@ -615,7 +670,7 @@
                 document.getElementById(fieldDate).value = checkDay.getFullYear().toString() + '-11-' + padString(checkDay.getDate().toString(), 2, '0');
                 document.getElementById(fieldTime).value = "12:00:00";
 
-                if (validateDate()) {
+                if (validateDate(false)) {
                     failed.push(testId);
                 } else {
                     passed.push(testId);
@@ -901,6 +956,335 @@
 
                 pass.push(testId);
             }
+
+            function test34_CCExpRequired() {
+                var field = "cc-expry-id";
+                var testId = 34;
+
+                document.getElementById(field).value = "";
+                checkCreditCardExpry();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test35_CCExpCorrect() {
+                var field = "cc-expry-id";
+                var testId = 35;
+
+                document.getElementById(field).value = "01/23";
+                checkCreditCardExpry();
+
+                if (!document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test36_CCCvcRequired() {
+                var field = "cc-cvc-id";
+                var testId = 36;
+
+                document.getElementById(field).value = "";
+                checkCreditCardSecCode();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test37_CCCvcAmexWrongPattern() {
+                var field = "cc-cvc-id";
+                var testId = 37;
+
+                document.getElementById("cc-num-id").value = "3111111111111111";
+                document.getElementById(field).value = "123";
+                checkCreditCardSecCode();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById("cc-num-id").value = "";
+                document.getElementById(field).value = "";
+                document.getElementById("cc-num-id").classList.remove("errorState");
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test38_CCCvcWrongPattern() {
+                var field = "cc-cvc-id";
+                var testId = 38;
+
+                for (var i = 0; i <= 9; i++) {
+                    if (i != 3) {
+                        document.getElementById("cc-num-id").value = i.toString() + "111111111111111";
+                        document.getElementById(field).value = "1234";
+                        checkCreditCardSecCode();
+
+                        if (!document.getElementById(field).classList.contains("errorState")) {
+                            failed.push(testId);
+                        }
+                    }
+                }
+
+                passed.push(testId);
+
+                document.getElementById("cc-num-id").value = "";
+                document.getElementById(field).value = "";
+                document.getElementById("cc-num-id").classList.remove("errorState");
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test39_CCCvcAmexCorrect() {
+                var field = "cc-cvc-id";
+                var testId = 39;
+
+                document.getElementById("cc-num-id").value = "3111111111111111";
+                document.getElementById(field).value = "1234";
+                checkCreditCardSecCode();
+
+                if (!document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById("cc-num-id").value = "";
+                document.getElementById(field).value = "";
+                document.getElementById("cc-num-id").classList.remove("errorState");
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test40_CCCvcCorrect() {
+                var field = "cc-cvc-id";
+                var testId = 40;
+
+                for (var i = 0; i <= 9; i++) {
+                    if (i != 3) {
+                        document.getElementById("cc-num-id").value = i.toString() + "111111111111111";
+                        document.getElementById(field).value = "123";
+                        checkCreditCardSecCode();
+
+                        if (document.getElementById(field).classList.contains("errorState")) {
+                            failed.push(testId);
+                        }
+                    }
+                }
+
+                passed.push(testId);
+
+                document.getElementById("cc-num-id").value = "";
+                document.getElementById(field).value = "";
+                document.getElementById("cc-num-id").classList.remove("errorState");
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            async function test41_PartyOf2() {
+                document.getElementById("input-person-name-id").value = "John Doe";
+                document.getElementById("input-phone-number-id").value = "(123) 456-7890";
+                document.getElementById("input-email-id").value = "user@domain.com";
+                document.getElementById("select-date-id").value = "2025-12-16";
+                document.getElementById("select-time-id").value = "12:00:00";
+                document.getElementById("input-num-guests-id").value = 2;
+                var testId = 41;
+
+                var r = await isAvailable(false);
+                await getBookingsAsync();
+
+                if (r) {
+                    passed.push(testId);
+
+                    await deleteAllBookingsAsync();
+                } else {
+                    failed.push(testId);
+                }
+            }
+
+            async function test42_PartyOf4() {
+                document.getElementById("input-person-name-id").value = "John Doe";
+                document.getElementById("input-phone-number-id").value = "(123) 456-7890";
+                document.getElementById("input-email-id").value = "user@domain.com";
+                document.getElementById("select-date-id").value = "2025-12-16";
+                document.getElementById("select-time-id").value = "12:00:00";
+                document.getElementById("input-num-guests-id").value = 4;
+                var testId = 42;
+
+                var r = await isAvailable(false);
+                await getBookingsAsync();
+
+                if (r) {
+                    passed.push(testId);
+
+                    await deleteAllBookingsAsync();
+                } else {
+                    failed.push(testId);
+                }
+            }
+
+            async function test43_PartyOf6() {
+                document.getElementById("input-person-name-id").value = "John Doe";
+                document.getElementById("input-phone-number-id").value = "(123) 456-7890";
+                document.getElementById("input-email-id").value = "user@domain.com";
+                document.getElementById("select-date-id").value = "2025-12-16";
+                document.getElementById("select-time-id").value = "12:00:00";
+                document.getElementById("input-num-guests-id").value = 2;
+                var testId = 43;
+
+                var r = await isAvailable(false);
+                await getBookingsAsync();
+
+                if (r) {
+                    passed.push(testId);
+
+                    await deleteAllBookingsAsync();
+                } else {
+                    failed.push(testId);
+                }
+            }
+
+            async function test44_PartyOf8() {
+                document.getElementById("input-person-name-id").value = "John Doe";
+                document.getElementById("input-phone-number-id").value = "(123) 456-7890";
+                document.getElementById("input-email-id").value = "user@domain.com";
+                document.getElementById("select-date-id").value = "2025-12-16";
+                document.getElementById("select-time-id").value = "12:00:00";
+                document.getElementById("input-num-guests-id").value = 2;
+                var testId = 44;
+
+                var r = await isAvailable(false);
+                await getBookingsAsync();
+
+                if (r) {
+                    passed.push(testId);
+
+                    await deleteAllBookingsAsync();
+                } else {
+                    failed.push(testId);
+                }
+            }
+
+            async function test45_PartyOf12() {
+                document.getElementById("input-person-name-id").value = "John Doe";
+                document.getElementById("input-phone-number-id").value = "(123) 456-7890";
+                document.getElementById("input-email-id").value = "user@domain.com";
+                document.getElementById("select-date-id").value = "2025-12-16";
+                document.getElementById("select-time-id").value = "12:00:00";
+                document.getElementById("input-num-guests-id").value = 2;
+                var testId = 45;
+
+                var r = await isAvailable(false);
+                await getBookingsAsync();
+
+                if (r) {
+                    passed.push(testId);
+
+                    await deleteAllBookingsAsync();
+                } else {
+                    failed.push(testId);
+                }
+            }
+
+            async function test46_PartyOf4HighTraffic() {
+                document.getElementById("input-person-name-id").value = "John Doe";
+                document.getElementById("input-phone-number-id").value = "(123) 456-7890";
+                document.getElementById("input-email-id").value = "user@domain.com";
+                document.getElementById("select-date-id").value = "2021-12-31";
+                document.getElementById("select-time-id").value = "12:00:00";
+                document.getElementById("input-num-guests-id").value = 4;
+                document.getElementById("cc-num-id").value = "4111111111111111";
+                document.getElementById("cc-expry-id").value = "12/25";
+                document.getElementById("cc-cvc-id").value = "123";
+                var testId = 46;
+
+                var r = await isAvailable(false);
+                await getBookingsAsync();
+
+                if (r) {
+                    passed.push(testId);
+
+                    await deleteAllBookingsAsync();
+                } else {
+                    failed.push(testId);
+                }
+            }
+
+            async function test47_BookingFailed() {
+                await deleteAllTablesAsync();
+                var data = {
+                    "bookingNumber": 0,
+                    "maxGuests": 2,
+                    "reserved": true,
+                    "tableNumber": 0
+                };
+
+                await postNewTableAsync(data);
+
+                document.getElementById("input-person-name-id").value = "John Doe";
+                document.getElementById("input-phone-number-id").value = "(123) 456-7890";
+                document.getElementById("input-email-id").value = "user@domain.com";
+                document.getElementById("select-date-id").value = "2021-12-31";
+                document.getElementById("select-time-id").value = "12:00:00";
+                document.getElementById("input-num-guests-id").value = 2;
+                document.getElementById("cc-num-id").value = "4111111111111111";
+                document.getElementById("cc-expry-id").value = "12/25";
+                document.getElementById("cc-cvc-id").value = "123";
+                var testId = 47;
+
+                var r = await isAvailable(false);
+                r = await isAvailable(false);
+
+                if (!r) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                await deleteAllBookingsAsync();
+                await deleteAllTablesAsync();
+            }
+
+            async function finalActions() {
+                if (oldBookings) {
+                    if (oldBookings.length > 0) {
+                        var n = oldBookings.length;
+
+                        for (var i = 0; i < n; i++) {
+                            await postBookingAsync(oldBookings[i]);
+                        }
+
+                        await getBookingsAsync();
+                    }
+                }
+
+                if (oldTables) {
+                    if (oldTables.length > 0) {
+                        var n = oldTables.length;
+
+                        for (var i = 0; i < n; i++) {
+                            await postNewTableAsync(oldTables[i]);
+                        }
+
+                        await getTablesAsync();
+                    }
+                }
+            }
         </script>
         <script type="text/javascript">
             //  <cite>RegEx validations based on https://stackoverflow.com/a/46181/5378019
@@ -951,13 +1335,16 @@
                     document.getElementById("input-phone-number-id").classList.add("errorState");
                     document.getElementById("button-submit").disabled = true;
                 } else {
-                    if (!validatePhoneNumber(pn)) {
-                        document.getElementById("input-phone-number-id").classList.add("errorState");
-                        document.getElementById("button-submit").disabled = true;
-                    } else {
-                        document.getElementById("input-phone-number-id").classList.remove("errorState");
-                        document.getElementById("button-submit").disabled = false;
-                    }
+                    //if (!validatePhoneNumber(pn)) {
+                    //    document.getElementById("input-phone-number-id").classList.add("errorState");
+                    //    document.getElementById("button-submit").disabled = true;
+                    //} else {
+                    //    document.getElementById("input-phone-number-id").classList.remove("errorState");
+                    //    document.getElementById("button-submit").disabled = false;
+                    //}
+
+                    document.getElementById("input-phone-number-id").classList.remove("errorState");
+                    document.getElementById("button-submit").disabled = false;
                 }
             }
 
@@ -981,7 +1368,7 @@
             function checkDate() {
                 var s = document.getElementById("select-date-id").value;
 
-                console.log("s:", s);
+                //console.log("s:", s);
 
                 if (s == "") {
                     document.getElementById("select-date-id").classList.add("errorState");
@@ -1348,7 +1735,7 @@
             getTablesAsync();
             getBookingsAsync();
 
-            async function isAvailable() {
+            async function isAvailable(raiseAlerts = true) {
                 var name = document.getElementById("input-person-name-id").value;
                 var phoneNo = document.getElementById("input-phone-number-id").value;
                 var email = document.getElementById("input-email-id").value;
@@ -1362,7 +1749,9 @@
                 if (date != "" && time != "" && size > 0) {
                     if (isHighTraffic) {
                         if (ccNum == "" || ccExp == "" || ccCvc == "") {
-                            alert("Credit card info is required for high traffic days and times.");
+                            if (raiseAlerts) {
+                                alert("Credit card info is required for high traffic days and times.");
+                            }
 
                             if (ccNum == "") {
                                 document.getElementById("cc-num-id").classList.add("errorState");
@@ -1376,7 +1765,7 @@
                                 document.getElementById("cc-cvc-id").classList.add("errorState");
                             }
 
-                            return;
+                            return false;
                         }
                     }
 
@@ -1389,28 +1778,36 @@
                     var msgPass = 'Success! We look forward to seeing you on ' + date + ' at ' + time + '.';
 
                     if (unoccTables.length === 0) {
-                        window.alert(msgFail);
-                        return;
+                        if (raiseAlerts) {
+                            window.alert(msgFail);
+                        }
+                        return false;
                     } else {
                         assignTables(size);
 
                         if (!tableAssignments) {
-                            window.alert(msgFail);
+                            if (raiseAlerts) {
+                                window.alert(msgFail);
+                            }
                             document.getElementById("button-reset").click();
                             document.getElementById("input-person-name-id").value = name;
                             document.getElementById("input-phone-number-id").value = phoneNo;
                             document.getElementById("input-email-id").value = email;
-                            return;
+                            return false;
                         } else if (tableAssignments.length === 0) {
-                            window.alert(msgFail);
+                            if (raiseAlerts) {
+                                window.alert(msgFail);
+                            }
                             document.getElementById("button-reset").click();
                             document.getElementById("input-person-name-id").value = name;
                             document.getElementById("input-phone-number-id").value = phoneNo;
                             document.getElementById("input-email-id").value = email;
-                            return;
+                            return false;
                         } else {
                             tableAssignments = tableAssignments.sort();
-                            window.alert(msgPass);
+                            if (raiseAlerts) {
+                                window.alert(msgPass);
+                            }
                             var ccInfo = {
                                 "ccNum": ccNum != "" ? encrypt(email, encrypt("Et7cP7rep9wAizdf", ccNum)) : ccNum,
                                 "ccExp": ccExp,
@@ -1433,7 +1830,7 @@
 
                             await postBookingAsync(data);
 
-                            releasePage()
+                            releasePage();
 
                             bookings = null;
 
@@ -1441,7 +1838,7 @@
                             document.getElementById("button-reset").click();
                             setPageReady()
 
-                            return;
+                            return true;
                         }
                     }
                 }
@@ -1474,17 +1871,44 @@
                 document.getElementById("button-submit").disabled = true;
             }
 
+            function releasePage() {
+                document.getElementById("input-person-name-id").disabled = false;
+                document.getElementById("input-phone-number-id").disabled = false;
+                document.getElementById("input-email-id").disabled = false;
+                document.getElementById("select-date-id").disabled = false;
+                document.getElementById("select-time-id").disabled = false;
+                document.getElementById("input-num-guests-id").disabled = false;
+                document.getElementById("cc-num-id").disabled = true;
+                document.getElementById("cc-expry-id").disabled = true;
+                document.getElementById("cc-cvc-id").disabled = true;
+                document.getElementById("button-submit").disabled = true;
+            }
+
             async function postBookingAsync(data) {
                 var url = "https://json-server-4351.herokuapp.com/Booking/";
-                console.log(data);
+                //console.log(data);
 
                 fetch(url, {
                     method: "POST",
                     body: JSON.stringify(data),
                     headers: { "Content-Type": "application/json" }
                 })
-                    .then(response => response.json())
-                    .then(json => console.log(json))
+                    //.then(response => response.json())
+                    //.then(json => console.log(json))
+                    .catch(err => console.log(err));
+            }
+
+            async function postNewTableAsync(data) {
+                var url = "https://json-server-4351.herokuapp.com/ResTable/";
+                //console.log(data);
+
+                fetch(url, {
+                    method: "POST",
+                    body: JSON.stringify(data),
+                    headers: { "Content-Type": "application/json" }
+                })
+                    //.then(response => response.json())
+                    //.then(json => console.log(json))
                     .catch(err => console.log(err));
             }
 
@@ -1657,87 +2081,51 @@
                     switch (c) {
                         case '3':
                             //console.log("amex");
-                            document.getElementById("img-amex-id").classList.remove("notActiveImage");
-                            document.getElementById("img-visa-id").classList.remove("activeImage");
-                            document.getElementById("img-mastercard-id").classList.remove("activeImage");
-                            document.getElementById("img-discover-id").classList.remove("activeImage");
-                            document.getElementById("img-generic-id").classList.remove("activeImage");
-
-                            document.getElementById("img-amex-id").classList.add("activeImage");
-                            document.getElementById("img-visa-id").classList.add("notActiveImage");
-                            document.getElementById("img-mastercard-id").classList.add("notActiveImage");
-                            document.getElementById("img-discover-id").classList.add("notActiveImage");
-                            document.getElementById("img-generic-id").classList.add("notActiveImage");
+                            document.getElementById("img-amex-id").style = "filter: grayscale(0%);";
+                            document.getElementById("img-visa-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-mastercard-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-discover-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-generic-id").style = "filter: grayscale(100%);";
                             break;
                         case '4':
                             //console.log("visa");
-                            document.getElementById("img-amex-id").classList.remove("activeImage");
-                            document.getElementById("img-visa-id").classList.remove("notActiveImage");
-                            document.getElementById("img-mastercard-id").classList.remove("activeImage");
-                            document.getElementById("img-discover-id").classList.remove("activeImage");
-                            document.getElementById("img-generic-id").classList.remove("activeImage");
-
-                            document.getElementById("img-amex-id").classList.add("notActiveImage");
-                            document.getElementById("img-visa-id").classList.add("activeImage");
-                            document.getElementById("img-mastercard-id").classList.add("notActiveImage");
-                            document.getElementById("img-discover-id").classList.add("notActiveImage");
-                            document.getElementById("img-generic-id").classList.add("notActiveImage");
+                            document.getElementById("img-amex-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-visa-id").style = "filter: grayscale(0%);";
+                            document.getElementById("img-mastercard-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-discover-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-generic-id").style = "filter: grayscale(100%);";
                             break;
                         case '5':
                             //console.log("mastercard");
-                            document.getElementById("img-amex-id").classList.remove("activeImage");
-                            document.getElementById("img-visa-id").classList.remove("activeImage");
-                            document.getElementById("img-mastercard-id").classList.remove("notActiveImage");
-                            document.getElementById("img-discover-id").classList.remove("activeImage");
-                            document.getElementById("img-generic-id").classList.remove("activeImage");
-
-                            document.getElementById("img-amex-id").classList.add("notActiveImage");
-                            document.getElementById("img-visa-id").classList.add("notActiveImage");
-                            document.getElementById("img-mastercard-id").classList.add("activeImage");
-                            document.getElementById("img-discover-id").classList.add("notActiveImage");
-                            document.getElementById("img-generic-id").classList.add("notActiveImage");
+                            document.getElementById("img-amex-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-visa-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-mastercard-id").style = "filter: grayscale(0%);";
+                            document.getElementById("img-discover-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-generic-id").style = "filter: grayscale(100%);";
                             break;
                         case '6':
                             //console.log("discover");
-                            document.getElementById("img-amex-id").classList.remove("activeImage");
-                            document.getElementById("img-visa-id").classList.remove("activeImage");
-                            document.getElementById("img-mastercard-id").classList.remove("activeImage");
-                            document.getElementById("img-discover-id").classList.remove("notActiveImage");
-                            document.getElementById("img-generic-id").classList.remove("activeImage");
-
-                            document.getElementById("img-amex-id").classList.add("notActiveImage");
-                            document.getElementById("img-visa-id").classList.add("notActiveImage");
-                            document.getElementById("img-mastercard-id").classList.add("notActiveImage");
-                            document.getElementById("img-discover-id").classList.add("activeImage");
-                            document.getElementById("img-generic-id").classList.add("notActiveImage");
+                            document.getElementById("img-amex-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-visa-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-mastercard-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-discover-id").style = "filter: grayscale(0%);";
+                            document.getElementById("img-generic-id").style = "filter: grayscale(100%);";
                             break;
                         default:
                             //console.log("generic");
-                            document.getElementById("img-amex-id").classList.remove("activeImage");
-                            document.getElementById("img-visa-id").classList.remove("activeImage");
-                            document.getElementById("img-mastercard-id").classList.remove("activeImage");
-                            document.getElementById("img-discover-id").classList.remove("activeImage");
-                            document.getElementById("img-generic-id").classList.remove("notActiveImage");
-
-                            document.getElementById("img-amex-id").classList.add("notActiveImage");
-                            document.getElementById("img-visa-id").classList.add("notActiveImage");
-                            document.getElementById("img-mastercard-id").classList.add("notActiveImage");
-                            document.getElementById("img-discover-id").classList.add("notActiveImage");
-                            document.getElementById("img-generic-id").classList.add("activeImage");
+                            document.getElementById("img-amex-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-visa-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-mastercard-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-discover-id").style = "filter: grayscale(100%);";
+                            document.getElementById("img-generic-id").style = "filter: grayscale(0%);";
                             break;
                     }
                 } else {
-                    document.getElementById("img-amex-id").classList.add("activeImage");
-                    document.getElementById("img-visa-id").classList.add("activeImage");
-                    document.getElementById("img-mastercard-id").classList.add("activeImage");
-                    document.getElementById("img-discover-id").classList.add("activeImage");
-                    document.getElementById("img-generic-id").classList.add("activeImage");
-
-                    document.getElementById("img-amex-id").classList.remove("notActiveImage");
-                    document.getElementById("img-visa-id").classList.remove("notActiveImage");
-                    document.getElementById("img-mastercard-id").classList.remove("notActiveImage");
-                    document.getElementById("img-discover-id").classList.remove("notActiveImage");
-                    document.getElementById("img-generic-id").classList.remove("notActiveImage");
+                    document.getElementById("img-amex-id").style = "filter: grayscale(0%);";
+                    document.getElementById("img-visa-id").style = "filter: grayscale(0%);";
+                    document.getElementById("img-mastercard-id").style = "filter: grayscale(0%);";
+                    document.getElementById("img-discover-id").style = "filter: grayscale(0%);";
+                    document.getElementById("img-generic-id").style = "filter: grayscale(0%);";
                 }
 
                 return;
@@ -1782,6 +2170,7 @@
                         }
                         else {
                             console.log("did not find high traffic day");
+                            isHighTraffic = false;
 
                             document.getElementById("cc-num-id").classList.remove("errorState");
                             document.getElementById("cc-expry-id").classList.remove("errorState");
@@ -1801,7 +2190,7 @@
                 return;
             }
 
-            function validateDate() {
+            function validateDate(raiseAlerts = true) {
                 var date = document.getElementById("select-date-id").value;
                 var time = document.getElementById("select-time-id").value;
 
@@ -1817,7 +2206,9 @@
                     //console.log("now + 15:", addMinutes(now, 15));
 
                     if (isThanksgiving(dTim)) {
-                        alert("The restaurant is closed on Thanksgiving Day");
+                        if (raiseAlerts) {
+                            alert("The restaurant is closed on Thanksgiving Day");
+                        }
                         
                         document.getElementById("select-date-id").value = "";
                         document.getElementById("select-time-id").value = "";
@@ -1826,7 +2217,9 @@
                     }
 
                     if (isSpecificDate(dTim, "12-25")) {
-                        alert("The restaurant is closed on Christmas Day");
+                        if (raiseAlerts) {
+                            alert("The restaurant is closed on Christmas Day");
+                        }
 
                         document.getElementById("select-date-id").value = "";
                         document.getElementById("select-time-id").value = "";
@@ -1835,7 +2228,9 @@
                     }
 
                     if (dTim < tenAM) {
-                        alert("The restaurant doesn't open until 10 AM");
+                        if (raiseAlerts) {
+                            alert("The restaurant doesn't open until 10 AM");
+                        }
 
                         document.getElementById("select-date-id").value = "";
                         document.getElementById("select-time-id").value = "";
@@ -1847,7 +2242,9 @@
                         var sevenPM = new Date(date + "T19:00:00");
 
                         if (dTim >= sevenPM) {
-                            alert("The restaurant closes at 7 PM on Christmas Eve");
+                            if (raiseAlerts) {
+                                alert("The restaurant closes at 7 PM on Christmas Eve");
+                            }
 
                             document.getElementById("select-date-id").value = "";
                             document.getElementById("select-time-id").value = "";
@@ -1857,7 +2254,9 @@
                     }
 
                     if (dTim >= twentyOneFourtyFive) {
-                        alert("No reservations accepted after 9:45 PM.");
+                        if (raiseAlerts) {
+                            alert("No reservations accepted after 9:45 PM.");
+                        }
 
                         document.getElementById("select-date-id").value = "";
                         document.getElementById("select-time-id").value = "";
@@ -1869,10 +2268,14 @@
 
 
                         if (dTim >= twentyOneFourtyFive) {
-                            alert("No reservations accepted after 9:45 PM.");
+                            if (raiseAlerts) {
+                                alert("No reservations accepted after 9:45 PM.");
+                            }
                             document.getElementById("select-date-id").value = "";
                         } else {
-                            alert("Reservations must be made at least 15 minutes in advance");
+                            if (raiseAlerts) {
+                                alert("Reservations must be made at least 15 minutes in advance");
+                            }
                         }
 
                         document.getElementById("select-time-id").value = "";
@@ -1898,6 +2301,7 @@
             }
 
             function isHighTrafficDay(dTim) {
+                //console.log("typeof dTim:", typeof dTim);
                 var d = dTim.getDay();
 
                 var sixPM = new Date(dateString(dTim.getFullYear(), dTim.getMonth() + 1, dTim.getDate()) + "T18:00:00");
@@ -1956,9 +2360,6 @@
             }
 
             function resetPage() {
-                document.getElementById("input-person-name-id").value = "";
-                document.getElementById("input-phone-number-id").value = "";
-                document.getElementById("input-email-id").value = "";
                 document.getElementById("select-date-id").value = "";
                 document.getElementById("select-time-id").value = "";
                 document.getElementById("input-num-guests-id").value = "";
@@ -1971,6 +2372,8 @@
                 document.getElementById("img-mastercard-id").style = "filter: grayscale(100%);";
                 document.getElementById("img-discover-id").style = "filter: grayscale(100%);";
                 document.getElementById("img-generic-id").style = "filter: grayscale(100%);";
+
+                document.getElementById("button-submit").disabled = true;
             }
 
             function addDays(baseDate, days) {

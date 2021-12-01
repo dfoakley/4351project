@@ -10,11 +10,11 @@
     
 </head>
 <body>
-    <div class="ribbon">
+    <!--div class="ribbon">
         <br />
         <a href="/make-reservation" style="color: white;">Make a reservation</a>
         <a href="/registration" style="color: white;">Registration</a>
-    </div>
+    </div-->
     <h1>Register Your Account</h1>
     <form id = "reg-form" method = "POST" action ="javascript:postUser()">
         <div class="main-holder" id="signup-form">
@@ -50,7 +50,7 @@
 
 
     
-            <p><i>By creating an account you agree to our <a href="#">Terms & Privacy</a>.</i></p>
+            <p><i>By creating an account you agree to our <a href="#" id="disableClick">Terms & Privacy</a>.</i></p>
             <button type="submit" class="registerbtn" id="rgtbtn">Register</button>
     
             <div class="container-signin" id="signin">
@@ -207,6 +207,7 @@
 		xhr.send(JSON.stringify(data));
 		var response = xhr.responseText;
 		console.log(response);
+        //window.location.href = "login";
      
 	}
     

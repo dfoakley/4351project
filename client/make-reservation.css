@@ -75,12 +75,18 @@ button {
     opacity: 80%;
     margin-top: 2px;
     margin-bottom: 3px;
+    text-decoration: none;
 }
 
 .ribbon {
-    display: inline;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    justify-content: center;
     margin-left: 2px;
     margin-right: 2px;
+    max-width: 172px;
     font-weight: bold;
 }
 
@@ -103,4 +109,10 @@ button {
 
 .activeImage {
     filter: grayscale(0%);
+}
+
+a{
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
 }
