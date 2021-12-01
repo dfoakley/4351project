@@ -26,7 +26,7 @@
 
             <input type="text" placeholder = "Full Name" name="fname" id="fname" required>
 
-            <input type="text" placeholder = "johndoe@gmail.com" name = "email" id = "email" required>
+            <input type="email" placeholder = "johndoe@gmail.com" name = "email" id = "email" required>
 
             <!--input type="text" placeholder = "Diner Number" name = "dinerNumber" id = "dinerNumber"-->
 
@@ -37,10 +37,15 @@
             <!--input type="text" placeholder = "Points" name = "points" id = "points" required-->
 
             <input type="text" placeholder = "Preferred Payment" name = "preferredPayment" id = "preferredPayment" required>
-
-            <input type="text" placeholder="Billing Address" name="billingAddress" id="billingAddress" required>
             
             <input type="text" placeholder="Mailing Address" name="mailingAddress" id="mailingAddress" required>
+
+            <label>
+                <input type ="checkbox" id = "sameAddress" name ="sameAddress" onclick="fillInAddress()">
+            </label>
+            
+
+            <input type="text" placeholder="Billing Address" name="billingAddress" id="billingAddress" required>
 
 
 
@@ -94,6 +99,17 @@
     </script-->  
 
 <script type="text/javascript">
+
+    function fillInAddress(){
+        var checky = document.getElementById('sameAddress');
+        var text = document.getElementById('mailingAddress').value;
+        if(checky.checked == true){
+            document.getElementById('billingAddress').value = text;
+        }
+        else{
+            document.getElementById('billingAddress').value = "";
+        }
+    }
     
 	var url = "https://json-server-4351.herokuapp.com/User/";
 
