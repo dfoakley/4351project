@@ -73,6 +73,8 @@
 			console.log(xhr.responseText);
 		}};
 
+    var name = document.getElementById('fname').value.concat(' ', document.getElementById('lname').value);
+
 
 
 		var data = {
@@ -81,7 +83,7 @@
   "email": "string",
   "id": 0,
   "mailingAddress": "string",
-  "name": "string",
+  "name": name,
   "passWord": "string",
   "phoneNumber": 0,
   "points": 0,
@@ -90,7 +92,7 @@
 }
 		console.log("sending", data);
 
-		xhr.send(data);
+		xhr.send(JSON.stringify(data));
 		var response = xhr.responseText;
 		console.log(response);
 	}

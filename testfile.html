@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Hello World!</title>
+  </head>
+  <body>
+    <h1>HELLO!</h1>
+    <form name="registrationForm" class="" action="javascript:postUser()" method="post">
+      <label for="fname">Full name:</label><br>
+      <input type="text" id="fname" name="fname"><br>
+      <label for="billingAddress">BillingAddress:</label><br>
+      <input type="text" id="billingAddress" name="billingAddress"><br>
+      <label for="dinerNumber">Diner Number:</label><br>
+      <input type="text" id="dinerNumber" name="dinerNumber"><br>
+      <label for="email">Email:</label><br>
+      <input type="text" id="email" name="email"><br>
+      <label for="id">Id:</label><br>
+      <input type="text" id="id" name="id"><br>
+      <label for="mailingAddress">MailingAddress:</label><br>
+      <input type="text" id="mailingAddress" name="mailingAddress"><br>
+      <label for="passWord">Password:</label><br>
+      <input type="text" id="passWord" name="passWord"><br>
+      <label for="phoneNumber">PhoneNumber:</label><br>
+      <input type="text" id="phoneNumber" name="phoneNumber"><br>
+      <label for="points">Points:</label><br>
+      <input type="text" id="points" name="points"><br>
+      <label for="preferredPayment">PreferredPayment:</label><br>
+      <input type="text" id="preferredPayment" name="preferredPayment"><br>
+      <label for="userName">Username:</label><br>
+      <input type="text" id="userName" name="userName"><br>
+	  <input type="submit">
+    </form>
+
+    <!-- <form name="resTable" class="" action="javascript:resTable()" method="post">
+      <label for="bookingNumber">BookingNumber:</label><br>
+      <input type="number" id="bookingNumber" name="bookingNumber"><br>
+      <label for="maxGuests">maxGuests:</label><br>
+      <input type="number" id="maxGuests" name="maxGuests"><br>
+      <label for="reserved">Reserved:</label><br>
+      <input type="checkbox" data-val="true" value="true" id="reserved" name="reserved"><br>
+      <label for="tableNumber">tableNumber:</label><br>
+      <input type="number" id="tableNumber" name="tableNumber"><br>
+      <input type="submit">
+    </form> -->
+
+
+	Get User
+
+	<form name="getForm" class="" action="javascript:getUser()" method="post">
+      <label for="fname">UserId:</label><br>
+      <input type="text" id="userNumber" name="userNumber"><br>
+	  <input type="submit">
+    </form>
+  </body>
+</html>
+
+
+<script type="text/javascript">
+
+
+	function getUser() {
+		var formElements = document.forms['getForm'].elements
+		var url = "https://json-server-4351.herokuapp.com/User/" + formElements['userNumber'].value;
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url);
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.setRequestHeader("Content-Type", "application/json");
+
+		xhr.onreadystatechange = function () {
+		if (xhr.readyState === 4) {
+			console.log(xhr.status);
+			console.log(xhr.responseText);
+		}};
+
+
+
+		var data = {
+		  "userNumber": formElements['userNumber'].value
+		}
+		console.log("sending", data);
+
+		xhr.send(data);
+		var response = xhr;
+		console.log(response);
+	}
+</script>
+
+<script type="text/javascript">
+	var url = "https://json-server-4351.herokuapp.com/User/";
+
+	function postUser() {
+		var formElements = document.forms['registrationForm'].elements
+
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", url);
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.setRequestHeader("Content-Type", "application/json");
+
+		xhr.onreadystatechange = function () {
+		if (xhr.readyState === 4) {
+			console.log(xhr.status);
+			console.log(xhr.responseText);
+		}};
+
+
+
+		var data = {
+  "billingAddress": formElements['billingAddress'].value,
+  "dinerNumber": parseInt(formElements['dinerNumber'].value),
+  "email": formElements['email'].value,
+  "id": parseInt(formElements['id'].value),
+  "mailingAddress": formElements['mailingAddress'].value,
+  "name": formElements['fname'].value,
+  "passWord": formElements['passWord'].value,
+  "phoneNumber": parseInt(formElements['phoneNumber'].value),
+  "points": parseInt(formElements['points'].value),
+  "preferredPayment": formElements['preferredPayment'].value,
+  "userName": formElements['userName'].value
+}
+		console.log("sending", data);
+
+		xhr.send(JSON.stringify(data));
+		var response = xhr.responseText;
+		console.log(response);
+	}
+</script>
+
+<!-- <script type="text/javascript">
+  	var url = "https://json-server-4351.herokuapp.com/ResTable/";
+
+    function resTable() {
+      var formElements = document.forms['resTable'].elements
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", url);
+      xhr.setRequestHeader("Accept", "application/json");
+      xhr.setRequestHeader("Content-Type", "application/json");
+
+      xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        console.log(xhr.status);
+        console.log(xhr.responseText);
+      }};
+
+      var data = {
+        "bookingNumber": formElements['bookingNumber'].value,
+        "maxGuests": formElements['maxGuests'].value,
+        "reserved": formElements['reserved'].value,
+        "tableNumber": formElements['tableNumber'].value,
+      }
+        console.log("sending", data);
+
+        xhr.send(JSON.stringify(data));
+        var response = xhr.responseText;
+        console.log(response);
+    }
+</script> -->

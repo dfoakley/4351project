@@ -1,309 +1,2104 @@
-<!DOCTYPE HTML>
+﻿<!DOCTYPE HTML>
 <html>
-	<head>
-		<link type="text/css" rel="stylesheet" href="/client/styles.css"/>
-		<div class="ribbon">
-			<a href="/make-reservation"><span>Make a reservation</span></a>
-		</div>
-	</head>
-    <body onload="myFunction()">
-        <h1>Make a Reservation</h1>
-        <table id = "table">
-            <tr>
-                <td class="rowHeader"><label for="person_name">Name:</label></td>
-                <td class="rowContents" colspan="2"><input type="text" name="person_name" id="mk_res_1" required maxlength="100" style="width: 94%;" /></td>
-            </tr>
-            <tr>
-                <td class="rowHeader"><label for="phone_number">Phone Number:</label></td>
-                <td class="rowContents" colspan="2"><input type="tel" id="mk_res_2" name="phone_number" pattern="^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$" required placeholder="(123) 456-7890" style="width: 94%;" /></td>
-            </tr>
-            <tr>
-                <td class="rowHeader"><label for="email">E-mail:</label></td>
-                <td class="rowContents" colspan="2"><input type="email" name="email" id="mk_res_3" required placeholder="address@domain.com" style="width: 94%;" />
-            </tr>
-            <tr>
-                <td class="rowHeader"><label for="selectDate">Select Date:</label></td>
-                <td class="rowContents"><input type="date" name="selectDate" onchange="validateDate()" required id="mk_res_4"></td>
-                <td class="rowContents"><input type="time" name="selectTime" required min="10:00" max="22:00" id="mk_res_5"></td>
-            </tr>
-            <tr>
-                <td class="rowHeader"><label for="numGuests">Number of Guests:</label></td>
-                <td class="rowContents" colspan="2"><input type="number" required min="1" max="20" name="numGuests" id="mk_res_6" style="width: 94%;"></td>
-            </tr>
-			<tr style="visibility: hidden;" id="cc_row">
-				<td class="rowHeader"><label for="ccnum">Credit Card Number:</label></td>
-				<td class="rowContents">
-					<!--<div class="tooltip">
-						<span class="tooltiptext">Credit card required to reserve table on high volume days<span>-->
-						<input type="text" name="ccnum" id="mk_res_9" style="width: 94%;"></input><!--
-					</div>-->
-				</td>
-			</tr>
-        </table>
-        <button onclick="getAvailability()" id="mk_res_10" >Submit</button>
-        <button onclick="resetPage()">Reset</button>
-        <div class="alert-div" id="res_div">
-            <strong name="res_str" id="mk_res_7"></strong>
-            <label id="mk_res_8"></label>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="/client/make-reservation.css" />
+    <title>Make Reservation</title>
+    <!--<div>Icons made by <a href="https://www.flaticon.com/authors/pictogramer" title="pictogramer">pictogramer</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>-->
+    <link rel="icon" type="image/png" href="/images/atomic" />
+</head>
+    <body>
+        <div class="ribbon">
+            <br />
+            <button id= "button-log-in" onclick= "location.href = 'login'">Login</button>
+            <button id = "button-log-out" class ="hiddenElement" onclick="logout()">Logout</button>
         </div>
+        <h1>Make a Reservation</h1>
+
+        <form id="make-reservation" onreset="resetPage()" onload="myFunction()">
+            <div class="reserve-form">
+                <input type="text" class="field" name="input-person-name" id="input-person-name-id" required maxlength="100" placeholder="Name" disabled onfocusout="checkName()" title="Required. Can be no longer than 100 characters" />
+                <input type="tel" class="field" name="input-phone-number" id="input-phone-number-id" required placeholder="(###) ###-####" disabled onfocusout="checkPhoneNumber()" title="Required" />
+                <input type="email" class="field" name="input-email" id="input-email-id" required placeholder="E-mail Address" disabled onfocusout="checkEmail()" title="Required" />
+                <input type="date" class="datetime" name="select-date" required onfocusout="checkDate()" onchange="checkDate()" id="select-date-id" disabled title="Required. Select a date either today or in the future." />
+                <input type="time" class="datetime" name="select-time" required onfocusout="checkTime()" onchange="checkForHighTraffic()" min="10:00" max="22:00" id="select-time-id" disabled title="Required. Select a time between 10 AM and 9:45 PM"/>
+                <input type="number" class="field" required min="1" max="20" name="input-num-guests" id="input-num-guests-id" placeholder="Number of Guests" disabled title="Required. Must be an integer between 1 and 20" onfocusout="checkNumGuests()"/>
+                <input type="password" class="field" name="cc-num" id="cc-num-id" maxlength="16" pattern="[0-9]{16}" disabled onkeyup="updateCreditCardImages()" onfocusout="checkCreditCard()" placeholder="Credit Card Number" title="Required. Should be a 16 digit string of integer characters" />
+                <div class="image-row">
+                    <img src="/images/amex" id="img-amex-id" width="26" height="20" class="notActiveImage" />
+                    <img src="/images/visa" id="img-visa-id" width="26" height="20" class="notActiveImage" />
+                    <img src="/images/mastercard" id="img-mastercard-id" width="26" height="20" class="notActiveImage" />
+                    <img src="/images/discover" id="img-discover-id" width="24" height="20" class="notActiveImage" />
+                    <img src="/images/generic" id="img-generic-id" width="32" height="20" class="notActiveImage" />
+                </div>
+                <input type="text" class="field" name="cc-expry" id="cc-expry-id" maxlength="5" disabled pattern="[0-9]{2}/[0-9]{2}" placeholder="Expiration Date (MM/YY)" onfocusout="checkCreditCardExpry()" title="Select your expiration date (MM/YY)" />
+                <input type="text" class="field" name="cc-cvc" id="cc-cvc-id" disabled maxlength="3" placeholder="Security Code" onfocusout="checkCreditCardSecCode()" title="Enter your security code. A string of 4 integer characters for American Express, 3 integer characters for all others."/>
+                <button type="button" onclick="isAvailable()" id="button-submit" disabled>Submit</button>
+                <button type="reset" id="button-reset">Reset</button>
+                <br /><br /><br /><br />
+                <button class="hiddenElement" type="button" id="button-admin" onclick="adminClick()">Admin</button>
+                <input class="hiddenElement" type="password" id="input-admin-pwd-id" placeholder="Admin Password" onfocusout="checkAdminPwd()" />
+                <button class="hiddenElement" type="button" id="button-test" onclick="testClick()">Test</button>
+            </div>
+        </form>
+        <script type="text/javascript">
+            let failed = [];
+            let passed = [];
+            let inAdminMode = false;
+            let encryptedAdminPwd = '6332377435147424352270';
+            let salt = '4fYhZ1LU4piA0pH2';
+            let oldBookings = [];
+            let oldTables = [];
+
+            function adminClick() {
+                if (!inAdminMode) {
+                    document.getElementById("input-admin-pwd-id").classList.remove("hiddenElement");
+                    inAdminMode = true;
+                } else {
+                    document.getElementById("input-admin-pwd-id").classList.add("hiddenElement");
+                }
+            }
+
+            function checkAdminPwd() {
+                if (document.getElementById("input-admin-pwd-id").value = "") {
+                    if (encrypt(salt, document.getElementById("input-admin-pwd-id").value) == encryptedAdminPwd) {
+                        document.getElementById('button-test').classList.remove("hiddenElement");
+                    } else {
+                        document.getElementById('button-test').classList.add("hiddenElement");
+                    }
+                }
+            }
+
+            function testClick() {
+                initialActions();
+                runTests();
+                finalActions();
+            }
+
+            async function initialActions() {
+                document.getElementById("input-person-name-id").classList.remove("errorState");
+                document.getElementById("input-phone-number-id").classList.remove("errorState");
+                document.getElementById("input-email-id").classList.remove("errorState");
+                document.getElementById("select-date-id").classList.remove("errorState");
+                document.getElementById("select-time-id").classList.remove("errorState");
+                document.getElementById("input-num-guests-id").classList.remove("errorState");
+                document.getElementById("cc-num-id").classList.remove("errorState");
+                document.getElementById("cc-expry-id").classList.remove("errorState");
+                document.getElementById("cc-cvc-id").classList.remove("errorState");
+
+                if (bookings) {
+                    if (bookings.length > 0) {
+                        oldBookings = bookings;
+                    }
+                }
+
+                await deleteAllBookingsAsync();
+
+                if (tables) {
+                    if (tables.length > 0) {
+                        oldTables = tables;
+                    }
+                }
+
+                failed = [];
+                passed = [];
+            }
+
+            async function deleteAllBookingsAsync() {
+                var url = "https://json-server-4351.herokuapp.com/Booking/deleteAllBookings";
+
+                fetch(url, {
+                    method: "DELETE",
+                    headers: { "Accept": "*/*" }
+                })
+                    .then(response => response.json())
+                    .then(json => console.log(json))
+                    .catch(err => console.log(err));
+            }
+
+            async function deleteAllTablesAsync() {
+                var url = "https://json-server-4351.herokuapp.com/ResTable/deleteAllResTables";
+
+                fetch(url, {
+                    method: "DELETE",
+                    headers: { "Accept": "*/*" }
+                })
+                    .then(response => response.json())
+                    .then(json => console.log(json))
+                    .catch(err => console.log(err));
+            }
+
+            function runTests() {
+                //  Name tests
+                test1_NameRequired();
+                test2_NameTooLong();
+                test3_NameCorrect();
+
+                //  Phone Number tests
+                test4_PhoneNumberRequired();
+                test5_PhoneNumberWrongPattern();
+                test6_PhoneNumberCorrect();
+
+                //  E-mail tests
+                test7_EmailRequired();
+                test8_EmailWrongPattern();
+                test9_EmailCorrect();
+
+                //  Date tests
+                test10_DateRequired();
+                test11_DateInThePast();
+                test12_DateCorrect();
+
+                //  Date-Time Tests
+                test13_DateTimeWeekend();
+                test14_DateTimeMemorialDay();
+                test15_DateTimeLaborDay();
+                test16_DateTimeNewYearsDay();
+                test17_DateTimeIndependenceDay();
+                test18_DateTimeChristmasEve();
+                test19_DateTimeNewYearsEve();
+                test20_DateTimeAfterHours();
+                test21_DateTimeBeforeHours();
+                test22_DateTimeChristmasDay();
+                test23_DateTimeThanksgivingDay();
+
+                //  Time tests
+                test24_TimeRequired();
+                test25_TimeCorrect();
+
+                //  Party Size tests
+                test26_SizeRequired();
+                test27_SizeTooSmall();
+                test28_SizeTooBig();
+                test29_SizeCorrect();
+
+                //  Credit Card Number Tests
+                test30_CCnumRequired();
+                test31_CCNumWrongPattern();
+                test32_CCNumCorrect();
+                test33_CCNumImages();
+            }
+
+            function test1_NameRequired() {
+                document.getElementById("input-person-name-id").value = "";
+                checkName();
+
+                if (document.getElementById("input-person-name-id").classList.contains("errorState")) {
+                    passed.push(1);
+                } else {
+                    failed.push(1);
+                }
+
+                document.getElementById("input-person-name-id").classList.remove("errorState");
+            }
+
+            function test2_NameTooLong() {
+                document.getElementById("input-person-name-id").value = "4StGoLEuIZ4ecL2VAKIJMPeZ6d6YU7VaNiHmFFyXJE816Qb2z355XAHUYRPNTCHvkZBdxyuowSCVU62jNIeT6234aZx3KP73w1TX2";
+                checkName();
+
+                if (document.getElementById("input-person-name-id").classList.contains("errorState")) {
+                    passed.push(2);
+                } else {
+                    failed.push(2);
+                }
+
+                document.getElementById("input-person-name-id").value = "";
+                document.getElementById("input-person-name-id").classList.remove("errorState");
+            }
+
+            function test3_NameCorrect() {
+                document.getElementById("input-person-name-id").value = "v0222fNL8p99dtzkWMes21yW7d92sLGJL5c7rEp9Q9cfUt3WlbVPta9tYs2L9O7s83sH6E2B0UbR5EF3MARe25vYMKVSkzCzd6D9";
+                checkName();
+
+                if (document.getElementById("input-person-name-id").classList.contains("errorState")) {
+                    failed.push(3);
+                } else {
+                    passed.push(3);
+                }
+
+                document.getElementById("input-person-name-id").value = "";
+                document.getElementById("input-person-name-id").classList.remove("errorState");
+            }
+
+            function test4_PhoneNumberRequired() {
+                document.getElementById("input-phone-number-id").value = "";
+                checkPhoneNumber();
+
+                if (document.getElementById("input-phone-number-id").classList.contains("errorState")) {
+                    passed.push(4);
+                } else {
+                    failed.push(4);
+                }
+
+                document.getElementById("input-phone-number-id").value = "";
+                document.getElementById("input-phone-number-id").classList.remove("errorState");
+            }
+
+            function test5_PhoneNumberWrongPattern() {
+                document.getElementById("input-phone-number-id").value = "1234567890";
+                checkPhoneNumber();
+
+                if (document.getElementById("input-phone-number-id").classList.contains("errorState")) {
+                    passed.push(5);
+                } else {
+                    failed.push(5);
+                }
+
+                document.getElementById("input-phone-number-id").value = "";
+                document.getElementById("input-phone-number-id").classList.remove("errorState");
+            }
+
+            function test6_PhoneNumberCorrect() {
+                document.getElementById("input-phone-number-id").value = "(123) 456-7890";
+                checkPhoneNumber();
+
+                if (document.getElementById("input-phone-number-id").classList.contains("errorState")) {
+                    failed.push(6);
+                } else {
+                    passed.push(6);
+                }
+
+                document.getElementById("input-phone-number-id").value = "";
+                document.getElementById("input-phone-number-id").classList.remove("errorState");
+            }
+
+            function test7_EmailRequired() {
+                document.getElementById("input-email-id").value = "";
+                checkEmail();
+
+                if (document.getElementById("input-email-id").classList.contains("errorState")) {
+                    passed.push(7);
+                } else {
+                    failed.push(7);
+                }
+
+                document.getElementById("input-email-id").value = "";
+                document.getElementById("input-email-id").classList.remove("errorState");
+            }
+
+            function test8_EmailWrongPattern() {
+                document.getElementById("input-email-id").value = "user#domain-com";
+                checkEmail();
+
+                if (document.getElementById("input-email-id").classList.contains("errorState")) {
+                    passed.push(8);
+                } else {
+                    failed.push(8);
+                }
+
+                document.getElementById("input-email-id").value = "";
+                document.getElementById("input-email-id").classList.remove("errorState");
+            }
+
+            function test9_EmailCorrect() {
+                document.getElementById("input-email-id").value = "user@domain.com";
+                checkEmail();
+
+                if (document.getElementById("input-email-id").classList.contains("errorState")) {
+                    failed.push(9);
+                } else {
+                    passed.push(9);
+                }
+
+                document.getElementById("input-email-id").value = "";
+                document.getElementById("input-email-id").classList.remove("errorState");
+            }
+
+            function test10_DateRequired() {
+                var field = "select-date-id";
+                var testId = 10;
+
+                document.getElementById(field).value = "";
+                checkDate();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test11_DateInThePast() {
+                var field = "select-date-id";
+                var testId = 11;
+
+                document.getElementById(field).value = addDays((new Date()), -1).toString();
+                checkDate();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test12_DateCorrect() {
+                var field = "select-date-id";
+                var testId = 12;
+
+                document.getElementById(field).value = addDays((new Date()), 1).toString();
+                checkDate();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test13_DateTimeWeekend() {
+                var fieldDate = 'select-date-id';
+                var fieldTime = 'select-time-id';
+                var nextWeekend = datePart(new Date());
+                var testId = 13;
+
+                while (nextWeekend.getDay() != 6) {
+                    addDays(nextWeekend, 1);
+                }
+
+                nextWeekend = addMinutes(nextWeekend, 12 * 60);
+
+                document.getElementById(fieldDate).value = nextWeekend.getFullYear() + '-' + padString((nextWeekend.getMonth() + 1).toString(), 2, '0') + '-' + padString(nextWeekend.getDate().toString(), 2, '0');
+                document.getElementById(fieldTime).value = "12:00:00";
+
+                if (!isHighTrafficDay()) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(fieldDate).value = "";
+                document.getElementById(fieldTime).value = "";
+                document.getElementById(fieldDate).classList.remove("errorState");
+                document.getElementById(fieldTime).classList.remove("errorState");
+            }
+
+            function test14_DateTimeMemorialDay() {
+                var fieldDate = 'select-date-id';
+                var fieldTime = 'select-time-id';
+                var testId = 14;
+                var checkDay = new Date(dateString((new Date()).getFullYear() + 1, 6, 1) + 'T12:00:00');	//	start on June 1st
+                var memorialDay;
+
+                if (checkDay.getDay() == 1) {	//	if June 1 is a Monday, subtract a week
+                    memorialDay = addDays(checkDay, -7);
+                }
+                else {	//	otherwise, subtract 1 day at time until we get to Monday
+                    while (checkDay.getDay() != 1) {
+                        checkDay = addDays(checkDay, -1);
+                    }
+                    //console.log("check day:", checkDay);
+                    memorialDay = checkDay;
+                }
+
+                document.getElementById(fieldDate).value = memorialDay.getFullYear().toString() + '-05-' + padString(memorialDay.getDate().toString(), 2, '0');
+                document.getElementById(fieldTime).value = "12:00:00";
+
+                if (!isHighTrafficDay()) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(fieldDate).value = "";
+                document.getElementById(fieldTime).value = "";
+                document.getElementById(fieldDate).classList.remove("errorState");
+                document.getElementById(fieldTime).classList.remove("errorState");
+            }
+
+            function test15_DateTimeLaborDay() {
+                var fieldDate = 'select-date-id';
+                var fieldTime = 'select-time-id';
+                var testId = 15;
+                var checkDay = new Date((new Date()).getFullYear().toString() + "-09-01" + 'T12:00:00');	//	start on September 1st
+                var laborDay;
+
+                while (checkDay.getDay() != 1) {
+                    checkDay = addDays(checkDay, 1);
+                }
+
+                laborDay = checkDay;
+
+                document.getElementById(fieldDate).value = laborDay.getFullYear() + '-09-' + padString(laborDay.getDate().toString(), 2, '0');
+                document.getElementById(fieldTime).value = "12:00:00";
+
+                if (!isHighTrafficDay()) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(fieldDate).value = "";
+                document.getElementById(fieldTime).value = "";
+                document.getElementById(fieldDate).classList.remove("errorState");
+                document.getElementById(fieldTime).classList.remove("errorState");
+            }
+
+            function test16_DateTimeNewYearsDay() {
+                var fieldDate = 'select-date-id';
+                var fieldTime = 'select-time-id';
+                var testId = 16;
+                var newYearsDay = new Date(((new Date()).getFullYear() + 1).toString() + "-01-01" + 'T12:00:00');
+
+                document.getElementById(fieldDate).value = newYearsDay.getFullYear() + '-01-01';
+                document.getElementById(fieldTime).value = "12:00:00";
+
+                if (!isHighTrafficDay()) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(fieldDate).value = "";
+                document.getElementById(fieldTime).value = "";
+                document.getElementById(fieldDate).classList.remove("errorState");
+                document.getElementById(fieldTime).classList.remove("errorState");
+            }
+
+            function test17_DateTimeIndependenceDay() {
+                var fieldDate = 'select-date-id';
+                var fieldTime = 'select-time-id';
+                var testId = 17;
+                var july4 = new Date(((new Date()).getFullYear() + 1).toString() + "-07-04" + 'T12:00:00');
+
+                document.getElementById(fieldDate).value = july4.getFullYear() + '-07-04';
+                document.getElementById(fieldTime).value = "12:00:00";
+
+                if (!isHighTrafficDay()) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(fieldDate).value = "";
+                document.getElementById(fieldTime).value = "";
+                document.getElementById(fieldDate).classList.remove("errorState");
+                document.getElementById(fieldTime).classList.remove("errorState");
+            }
+
+            function test18_DateTimeChristmasEve() {
+                var fieldDate = 'select-date-id';
+                var fieldTime = 'select-time-id';
+                var testId = 18;
+                var xmasEve = new Date(((new Date()).getFullYear() + 1).toString() + "-12-24" + 'T12:00:00');
+
+                document.getElementById(fieldDate).value = xmasEve.getFullYear() + '-12-24';
+                document.getElementById(fieldTime).value = "12:00:00";
+
+                if (!isHighTrafficDay()) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(fieldDate).value = "";
+                document.getElementById(fieldTime).value = "";
+                document.getElementById(fieldDate).classList.remove("errorState");
+                document.getElementById(fieldTime).classList.remove("errorState");
+            }
+
+            function test19_DateTimeNewYearsEve() {
+                var fieldDate = 'select-date-id';
+                var fieldTime = 'select-time-id';
+                var testId = 19;
+                var xmasEve = new Date(((new Date()).getFullYear() + 1).toString() + "-12-31" + 'T12:00:00');
+
+                document.getElementById(fieldDate).value = xmasEve.getFullYear() + '-12-31';
+                document.getElementById(fieldTime).value = "12:00:00";
+
+                if (!isHighTrafficDay()) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(fieldDate).value = "";
+                document.getElementById(fieldTime).value = "";
+                document.getElementById(fieldDate).classList.remove("errorState");
+                document.getElementById(fieldTime).classList.remove("errorState");
+            }
+
+            function test20_DateTimeAfterHours() {
+                var fieldDate = 'select-date-id';
+                var fieldTime = 'select-time-id';
+                var testId = 20;
+                var dTim = addDays(datePart(new Date()), 1);
+                dTim = addMinutes(dTim, 23 * 60);
+
+                document.getElementById(fieldDate).value = xmasEve.getFullYear() + padString((dTim.getMonth() + 1).toString(), 2, '0') + padString(dTim.getDate().toString(), 2, '0');
+                document.getElementById(fieldTime).value = "23:00:00";
+
+                if (validateDate()) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(fieldDate).value = "";
+                document.getElementById(fieldTime).value = "";
+                document.getElementById(fieldDate).classList.remove("errorState");
+                document.getElementById(fieldTime).classList.remove("errorState");
+            }
+
+            function test21_DateTimeBeforeHours() {
+                var fieldDate = 'select-date-id';
+                var fieldTime = 'select-time-id';
+                var testId = 21;
+                var dTim = addDays(datePart(new Date()), 1);
+                dTim = addMinutes(dTim, 8 * 60);
+
+                document.getElementById(fieldDate).value = xmasEve.getFullYear() + padString((dTim.getMonth() + 1).toString(), 2, '0') + padString(dTim.getDate().toString(), 2, '0');
+                document.getElementById(fieldTime).value = "08:00:00";
+
+                if (validateDate()) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(fieldDate).value = "";
+                document.getElementById(fieldTime).value = "";
+                document.getElementById(fieldDate).classList.remove("errorState");
+                document.getElementById(fieldTime).classList.remove("errorState");
+            }
+
+            function test22_DateTimeChristmasDay() {
+                var fieldDate = 'select-date-id';
+                var fieldTime = 'select-time-id';
+                var testId = 22;
+                var xmasDay = new Date(((new Date()).getFullYear() + 1).toString() + "-12-25" + 'T12:00:00');
+
+                document.getElementById(fieldDate).value = xmasDay.getFullYear().toString() + '-12-25';
+                document.getElementById(fieldTime).value = "12:00:00";
+
+                if (validateDate()) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(fieldDate).value = "";
+                document.getElementById(fieldTime).value = "";
+                document.getElementById(fieldDate).classList.remove("errorState");
+                document.getElementById(fieldTime).classList.remove("errorState");
+            }
+
+            function test23_DateTimeThanksgivingDay() {
+                var fieldDate = 'select-date-id';
+                var fieldTime = 'select-time-id';
+                var testId = 23;
+                var checkDay = new Date(((new Date()).getFullYear() + 1).toString() + "-11-01" + 'T12:00:00');
+
+                var numOfThursdays = 0;
+
+                while (numOfThursdays < 4) {
+                    if (checkDay.getDay() === 4) {
+                        numOfThursdays++;
+                    }
+
+                    checkDay = addDays(checkDay, 1);
+                }
+
+                checkDay = addDays(checkDay, -1);
+
+                document.getElementById(fieldDate).value = checkDay.getFullYear().toString() + '-11-' + padString(checkDay.getDate().toString(), 2, '0');
+                document.getElementById(fieldTime).value = "12:00:00";
+
+                if (validateDate()) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(fieldDate).value = "";
+                document.getElementById(fieldTime).value = "";
+                document.getElementById(fieldDate).classList.remove("errorState");
+                document.getElementById(fieldTime).classList.remove("errorState");
+            }
+
+            function test24_TimeRequired() {
+                var field = "select-time-id";
+                var testId = 24;
+
+                document.getElementById(field).value = "";
+                checkTime();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test25_TimeCorrect() {
+                var field = "select-time-id";
+                var testId = 25;
+
+                document.getElementById(field).value = "12:00:00";
+                checkTime();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    failed.push(testId);
+                } else {
+                    passed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test26_SizeRequired() {
+                var field = "input-num-guests-id";
+                var testId = 26;
+
+                document.getElementById(field).value = "";
+                checkNumGuests();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test27_SizeTooSmall() {
+                var field = "input-num-guests-id";
+                var testId = 27;
+
+                document.getElementById(field).value = 0;
+                checkNumGuests();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test28_SizeTooBig() {
+                var field = "input-num-guests-id";
+                var testId = 28;
+
+                document.getElementById(field).value = 21;
+                checkNumGuests();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test29_SizeCorrect() {
+                var field = "input-num-guests-id";
+                var testId = 29;
+
+                document.getElementById(field).value = 12;
+                checkNumGuests();
+
+                if (!document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test30_CCnumRequired() {
+                var field = "cc-num-id";
+                var testId = 30;
+
+                document.getElementById(field).value = "";
+                checkCreditCard();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test31_CCNumWrongPattern() {
+                var field = "cc-num-id";
+                var testId = 31;
+
+                document.getElementById(field).value = "P5cLu8DnQz4j411Q";
+                checkCreditCard();
+
+                if (document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test32_CCNumCorrect() {
+                var field = "cc-num-id";
+                var testId = 32;
+
+                document.getElementById(field).value = "1111111111111111";
+                checkCreditCard();
+
+                if (!document.getElementById(field).classList.contains("errorState")) {
+                    passed.push(testId);
+                } else {
+                    failed.push(testId);
+                }
+
+                document.getElementById(field).value = "";
+                document.getElementById(field).classList.remove("errorState");
+            }
+
+            function test33_CCNumImages() {
+                var field = "cc-num-id";
+                var testId = 33;
+
+                for (var i = 0; i < 10; i++) {
+                    document.getElementById(field).value = i.toString() + "111111111111111";
+                    updateCreditCardImages();
+
+                    switch (i) {
+                        case 3:
+                            var test = document.getElementById("img-amex-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-visa-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-mastercard-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-discover-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-generic-id").classList.contains("activeImage");
+
+                            test = test && !document.getElementById("img-amex-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-visa-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-mastercard-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-discover-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-generic-id").classList.contains("notActiveImage");
+
+                            if (!test) {
+                                failed.push(testId);
+                                return;
+                            } else {
+                                break;
+                            }
+                        case 4:
+                            var test = !document.getElementById("img-amex-id").classList.contains("activeImage");
+                            test = test && document.getElementById("img-visa-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-mastercard-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-discover-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-generic-id").classList.contains("activeImage");
+
+                            test = test && document.getElementById("img-amex-id").classList.contains("notActiveImage");
+                            test = test && !document.getElementById("img-visa-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-mastercard-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-discover-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-generic-id").classList.contains("notActiveImage");
+
+                            if (!test) {
+                                failed.push(testId);
+                                return;
+                            } else {
+                                break;
+                            }
+                        case 5:
+                            var test = !document.getElementById("img-amex-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-visa-id").classList.contains("activeImage");
+                            test = test && document.getElementById("img-mastercard-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-discover-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-generic-id").classList.contains("activeImage");
+
+                            test = test && document.getElementById("img-amex-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-visa-id").classList.contains("notActiveImage");
+                            test = test && !document.getElementById("img-mastercard-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-discover-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-generic-id").classList.contains("notActiveImage");
+
+                            if (!test) {
+                                failed.push(testId);
+                                return;
+                            } else {
+                                break;
+                            }
+                        case 6:
+                            var test = !document.getElementById("img-amex-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-visa-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-mastercard-id").classList.contains("activeImage");
+                            test = test && document.getElementById("img-discover-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-generic-id").classList.contains("activeImage");
+
+                            test = test && document.getElementById("img-amex-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-visa-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-mastercard-id").classList.contains("notActiveImage");
+                            test = test && !document.getElementById("img-discover-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-generic-id").classList.contains("notActiveImage");
+
+                            if (!test) {
+                                failed.push(testId);
+                                return;
+                            } else {
+                                break;
+                            }
+                        default:
+                            var test = !document.getElementById("img-amex-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-visa-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-mastercard-id").classList.contains("activeImage");
+                            test = test && !document.getElementById("img-discover-id").classList.contains("activeImage");
+                            test = test && document.getElementById("img-generic-id").classList.contains("activeImage");
+
+                            test = test && document.getElementById("img-amex-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-visa-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-mastercard-id").classList.contains("notActiveImage");
+                            test = test && document.getElementById("img-discover-id").classList.contains("notActiveImage");
+                            test = test && !document.getElementById("img-generic-id").classList.contains("notActiveImage");
+
+                            if (!test) {
+                                failed.push(testId);
+                                return;
+                            } else {
+                                break;
+                            }
+                    }
+                }
+
+                document.getElementById("img-amex-id").classList.remove("activeImage");
+                document.getElementById("img-visa-id").classList.remove("activeImage");
+                document.getElementById("img-mastercard-id").classList.remove("activeImage");
+                document.getElementById("img-discover-id").classList.remove("activeImage");
+                document.getElementById("img-generic-id").classList.remove("activeImage");
+
+                document.getElementById("img-amex-id").classList.add("notActiveImage");
+                document.getElementById("img-visa-id").classList.add("notActiveImage");
+                document.getElementById("img-mastercard-id").classList.add("notActiveImage");
+                document.getElementById("img-discover-id").classList.add("notActiveImage");
+                document.getElementById("img-generic-id").classList.add("notActiveImage");
+
+                pass.push(testId);
+            }
+        </script>
+        <script type="text/javascript">
+            //  <cite>RegEx validations based on https://stackoverflow.com/a/46181/5378019
+            const validatePhoneNumber = (phoneNumber) => {
+                return String(phoneNumber)
+                    .toLowerCase()
+                    .match(
+                        /^\([0-9]{3}\)\s[0-9]{3}-[0-9]{4}$/
+                    );
+            };
+
+            const validateEmail = (email) => {
+                return String(email)
+                    .toLowerCase()
+                    .match(
+                        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                    );
+            };
+
+            const validateCreditCardNumber = (ccNum) => {
+                return String(ccNum)
+                    .toLowerCase()
+                    .match(
+                        /^[0-9]{16}$/
+                    );
+            };
+            //  </cite>
+
+            function checkName() {
+                if (document.getElementById("input-person-name-id").value == "") {
+                    document.getElementById("input-person-name-id").classList.add("errorState");
+                    document.getElementById("button-submit").disabled = true;
+                } else {
+                    if (document.getElementById("input-person-name-id").value.length > 100) {
+                        document.getElementById("input-person-name-id").classList.add("errorState");
+                        document.getElementById("button-submit").disabled = true;
+                    } else {
+                        document.getElementById("input-person-name-id").classList.remove("errorState");
+                        document.getElementById("button-submit").disabled = false;
+                    }
+                }
+            }
+
+            function checkPhoneNumber() {
+                var pn = document.getElementById("input-phone-number-id").value;
+
+                if (pn == "") {
+                    document.getElementById("input-phone-number-id").classList.add("errorState");
+                    document.getElementById("button-submit").disabled = true;
+                } else {
+                    if (!validatePhoneNumber(pn)) {
+                        document.getElementById("input-phone-number-id").classList.add("errorState");
+                        document.getElementById("button-submit").disabled = true;
+                    } else {
+                        document.getElementById("input-phone-number-id").classList.remove("errorState");
+                        document.getElementById("button-submit").disabled = false;
+                    }
+                }
+            }
+
+            function checkEmail() {
+                var email = document.getElementById("input-email-id").value;
+
+                if (email == "") {
+                    document.getElementById("input-email-id").classList.add("errorState");
+                    document.getElementById("button-submit").disabled = true;
+                } else {
+                    if (!validateEmail(email)) {
+                        document.getElementById("input-email-id").classList.add("errorState");
+                        document.getElementById("button-submit").disabled = true;
+                    } else {
+                        document.getElementById("input-email-id").classList.remove("errorState");
+                        document.getElementById("button-submit").disabled = false;
+                    }
+                }
+            }
+
+            function checkDate() {
+                var s = document.getElementById("select-date-id").value;
+
+                console.log("s:", s);
+
+                if (s == "") {
+                    document.getElementById("select-date-id").classList.add("errorState");
+                    document.getElementById("button-submit").disabled = true;
+                    return;
+                }
+
+                var now = new Date();
+                var dTim = new Date(s);
+                var dayNow = datePart(now);
+                var dayDTim = datePart(dTim);
+
+                if (dayDTim < dayNow) {
+                    document.getElementById("select-date-id").classList.add("errorState");
+                    document.getElementById("button-submit").disabled = true;
+                } else {
+                    document.getElementById("select-date-id").classList.remove("errorState");
+                    document.getElementById("button-submit").disabled = false;
+
+                    checkForHighTraffic();
+                }
+            }
+
+            function checkTime() {
+                var s = document.getElementById("select-time-id").value;
+
+                if (s == "") {
+                    document.getElementById("select-time-id").classList.add("errorState");
+                    document.getElementById("button-submit").disabled = true;
+                } else {
+                    document.getElementById("select-time-id").classList.remove("errorState");
+                    document.getElementById("button-submit").disabled = false;
+                }
+            }
+
+            function datePart(dTim) {
+                var y = dTim.getFullYear().toString();
+                var m = padString((dTim.getMonth() + 1).toString(), 2, '0');
+                var d = padString(dTim.getDate().toString(), 2, '0');
+
+                return new Date(y + '-' + m + '-' + d + 'T00:00:00');
+            }
+
+            function checkNumGuests() {
+                if (document.getElementById("input-num-guests-id").value == "") {
+                    document.getElementById("input-num-guests-id").classList.add("errorState");
+                    document.getElementById("button-submit").disabled = true;
+                } else {
+                    var size = parseFloat(document.getElementById("input-num-guests-id").value);
+
+                    if (!Number.isInteger(size)) {
+                        document.getElementById("input-num-guests-id").classList.add("errorState");
+                        document.getElementById("button-submit").disabled = true;
+                    } else {
+                        if (!(1 <= size && size <= 20)) {
+                            document.getElementById("input-num-guests-id").classList.add("errorState");
+                            document.getElementById("button-submit").disabled = true;
+                        } else {
+                            document.getElementById("input-num-guests-id").classList.remove("errorState");
+                            document.getElementById("button-submit").disabled = false;
+                        }
+                    }
+                }
+            }
+
+            function checkCreditCard() {
+                var ccNum = document.getElementById("cc-num-id").value;
+                var digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+                if (ccNum == "") {
+                    document.getElementById("cc-num-id").classList.add("errorState");
+                    document.getElementById("button-submit").disabled = true;
+                } else {
+                    if (ccNum.length != 16) {
+                        document.getElementById("cc-num-id").classList.add("errorState");
+                        document.getElementById("button-submit").disabled = true;
+                    } else {
+                        for (var i = 0; i < 16; i++) {
+                            if (digits.filter(function (x) {
+                                return x === ccNum.charAt(i);
+                            }).length === 0) {
+                                document.getElementById("cc-num-id").classList.add("errorState");
+                                document.getElementById("button-submit").disabled = true;
+                                return;
+                            }
+                        }
+
+                        document.getElementById("cc-num-id").classList.remove("errorState");
+                        document.getElementById("button-submit").disabled = false;
+                    }
+                }
+            }
+
+            function checkCreditCardExpry() {
+                var ccExpry = document.getElementById("cc-expry-id").value;
+
+                if (ccExpry == "") {
+                    document.getElementById("cc-expry-id").classList.add("errorState");
+                    document.getElementById("button-submit").disabled = true;
+                } else {
+                    document.getElementById("cc-expry-id").classList.remove("errorState");
+                    document.getElementById("button-submit").disabled = false;
+                }
+            }
+
+            function checkCreditCardSecCode() {
+                var ccCvc = document.getElementById("cc-cvc-id").value;
+                var ccNum = document.getElementById("cc-num-id").value;
+                var digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+                if (ccCvc == "") {
+                    document.getElementById("cc-cvc-id").classList.add("errorState");
+                    document.getElementById("button-submit").disabled = true;
+                } else {
+                    var isAmex = (ccNum.charAt(0) === '3');
+
+                    if (isAmex) {
+                        if (ccCvc.length != 4) {
+                            document.getElementById("cc-cvc-id").classList.add("errorState");
+                            document.getElementById("button-submit").disabled = true;
+                        } else {
+                            for (var i = 0; i < 4; i++) {
+                                if (digits.filter(function (x) {
+                                    return x === ccCvc.charAt(i);
+                                }).length === 0) {
+                                    document.getElementById("cc-cvc-id").classList.add("errorState");
+                                    document.getElementById("button-submit").disabled = true;
+                                    return;
+                                }
+                            }
+
+                            document.getElementById("cc-cvc-id").classList.remove("errorState");
+                            document.getElementById("button-submit").disabled = false;
+                        }
+                    } else {
+                        if (ccCvc.length != 3) {
+                            document.getElementById("cc-cvc-id").classList.add("errorState");
+                            document.getElementById("button-submit").disabled = true;
+                        } else {
+                            for (var i = 0; i < 3; i++) {
+                                if (digits.filter(function (x) {
+                                    return x === ccCvc.charAt(i);
+                                }).length === 0) {
+                                    document.getElementById("cc-cvc-id").classList.add("errorState");
+                                    document.getElementById("button-submit").disabled = true;
+                                    return;
+                                }
+                            }
+
+                            document.getElementById("cc-cvc-id").classList.remove("errorState");
+                            document.getElementById("button-submit").disabled = false;
+                        }
+                    }
+                }
+            }
+        </script>
+        <script type="text/javascript">
+            let tables = null;    //  all tables
+            let tables2 = [];   //  2-person tables
+            let tables4 = [];   //  4-person tables
+            let tables6 = [];   //  6-person tables
+            let tables8 = [];   //  8-person tables
+            let bookings = null;  //  all bookings
+            let nearbyBookings = [];  //  bookings within 1.5 hr of the request
+            let bookingTables = []; //  all booking-table objects
+            let occupiedTables = []; //  tables associated with bookings in nearbyBookings
+            let unoccTables = [];   //  all unoccupied tables
+            let unoccTables2 = [];    //  unoccupied 2-person tables
+            let unoccTables4 = [];    //  unoccupied 4-person tables
+            let unoccTables6 = [];    //  unoccupied 6-person tables
+            let unoccTables8 = [];    //  unoccupied 8-person tables
+            let tableAssignments = [];
+            let userNo = 0; //  User number
+            let bookingNumber = -1;
+            let isHighTraffic = false;
+            
+            async function getTablesAsync() {
+                var supplemental = {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                var url = 'https://json-server-4351.herokuapp.com/ResTable/getAllTables';
+                const response = await fetch(url, supplemental);
+                const data = await response.json();
+
+                addTables(data);
+
+                if (tables != null && bookings != null) {
+                    document.getElementById("button-submit").disabled = false;
+                }
+            }
+
+            function addTables(obj) {
+                tables = [];
+                var n = obj.length;
+
+                for (var i = 0; i < n; i++) {
+                    tables.push(obj[i]);
+                }
+
+                tables = tables.sort(function (a, b) {
+                    return a.tableNumber - b.tableNumber;
+                });
+
+                if (tables != null && bookings != null) {
+                    setPageReady();
+                }
+            }
+
+            async function getBookingsAsync() {
+                var supplemental = {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                var url = 'https://json-server-4351.herokuapp.com/Booking/getAllBookings';
+                const response = await fetch(url, supplemental);
+                const data = await response.json();
+
+                addBookings(data);
+            }
+
+            function addBookings(obj) {
+                bookings = [];
+                var n = obj.length;
+
+                for (var i = 0; i < n; i++) {
+                    bookings.push(obj[i]);
+                }
+
+                bookings = bookings.sort(function (a, b) {
+                    return a.bookingNumber - b.bookingNumber;
+                });
+
+                bookingNumber = bookings.length - 1;
+
+                if (tables != null && bookings != null) {
+                    setPageReady();
+                }
+            }
+
+            function filterBookings(dTim) {
+                nearbyBookings = [];
+
+                if (bookings) {
+                    if (bookings.length > 0) {
+                        var n = bookings.length;
+                        for (var i = 0; i < n; i++) {
+                            var booking = bookings[i];
+                            var d = new Date(booking['dateTime']);
+                            var diffMilliseconds = Math.abs(dTim - d);
+                            var diffHours = diffMilliseconds / (1000 * 3600);
+
+                            if (diffHours <= 1.5) {
+                                nearbyBookings.push(booking);
+                            }
+                        }
+                    }
+                }
+            }
+
+            function logout(){
+                localStorage.removeItem('name');
+                window.location.href = "login";
+            }
+
+            function setPageReady() {
+                //console.log(localStorage.getItem('name'));
+                if(localStorage.getItem('name') == "" || localStorage.getItem('name') == null){
+                    document.getElementById("input-person-name-id").disabled = false;
+                    document.getElementById("input-phone-number-id").disabled = false;
+                    document.getElementById("input-email-id").disabled = false;
+                    document.getElementById("button-log-out").classList.add("hiddenElement");
+                    document.getElementById("button-log-in").classList.remove("hiddenElement");
+                    console.log("Guest User")
+                }
+                else{
+                    document.getElementById("input-person-name-id").value = localStorage.getItem('name');
+                    document.getElementById("input-phone-number-id").value = localStorage.getItem('phoneNumber');
+                    document.getElementById("input-email-id").value = localStorage.getItem('email');
+                    document.getElementById("button-log-out").classList.remove("hiddenElement");
+                    document.getElementById("button-log-in").classList.add("hiddenElement");
+                    console.log("Registered User")
+                }
+
+               
+               
+                document.getElementById("select-date-id").disabled = false;
+                document.getElementById("select-time-id").disabled = false;
+                document.getElementById("input-num-guests-id").disabled = false;
+                document.getElementById("button-submit").disabled = false;
+
+                console.log("Ready!");
+            }
+
+            function getUnnoccupiedTables() {
+                occupiedTables = [];
+                if (nearbyBookings) {
+                    if (nearbyBookings.length > 0) {
+                        var m = nearbyBookings.length;
+                        for (var i = 0; i < m; i++) {
+                            var x = nearbyBookings[i];
+                            var tb = x.tablesBooked;
+                            var n = tb.length;
+                            for (var j = 0; j < n; j++) {
+                                var y = tb[j];
+                                var q = tables.filter(function (t) {
+                                    return t.tableNumber === y;
+                                });
+
+                                if (q) {
+                                    if (q.length > 0) {
+                                        occupiedTables.push(q[0]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var n = tables.length;
+                unoccTables = [];
+
+                for (var i = 0; i < n; i++) {
+                    var table = tables[i];
+                    
+                    if (occupiedTables.filter(function (t) {
+                        return table.tableNumber === t.tableNumber;
+                    }).length === 0) {
+                        unoccTables.push(table);
+                    }
+                }
+
+                filterUnoccupiedTables();
+            }
+
+            function filterUnoccupiedTables() {
+                unoccTables2 = [];
+                unoccTables2 = unoccTables.filter(function (t) {
+                    return t.maxGuests === 2;
+                });
+
+                unoccTables4 = [];
+                unoccTables4 = unoccTables.filter(function (t) {
+                    return t.maxGuests === 4;
+                });
+
+                unoccTables6 = [];
+                unoccTables6 = unoccTables.filter(function (t) {
+                    return t.maxGuests === 6;
+                });
+
+                unoccTables8 = [];
+                unoccTables8 = unoccTables.filter(function (t) {
+                    return t.maxGuests === 8;
+                });
+
+                console.log("unoccTables:", [unoccTables2, unoccTables4, unoccTables6, unoccTables8]);
+            }
+
+            getTablesAsync();
+            getBookingsAsync();
+
+            async function isAvailable() {
+                var name = document.getElementById("input-person-name-id").value;
+                var phoneNo = document.getElementById("input-phone-number-id").value;
+                var email = document.getElementById("input-email-id").value;
+                var date = document.getElementById("select-date-id").value;
+                var time = document.getElementById("select-time-id").value;
+                var size = document.getElementById("input-num-guests-id").value;
+                var ccNum = document.getElementById("cc-num-id").value;
+                var ccExp = document.getElementById("cc-expry-id").value;
+                var ccCvc = document.getElementById("cc-cvc-id").value;
+
+                if (date != "" && time != "" && size > 0) {
+                    if (isHighTraffic) {
+                        if (ccNum == "" || ccExp == "" || ccCvc == "") {
+                            alert("Credit card info is required for high traffic days and times.");
+
+                            if (ccNum == "") {
+                                document.getElementById("cc-num-id").classList.add("errorState");
+                            }
+
+                            if (ccExp == "") {
+                                document.getElementById("cc-expry-id").classList.add("errorState");
+                            }
+
+                            if (ccCvc == "") {
+                                document.getElementById("cc-cvc-id").classList.add("errorState");
+                            }
+
+                            return;
+                        }
+                    }
+
+                    var dTim = new Date(date + 'T' + time);
+                    
+                    filterBookings(dTim);
+                    getUnnoccupiedTables();
+
+                    var msgFail = 'Sorry, we\'re unable to make that reservation. Please try a different date, time, or party size.';
+                    var msgPass = 'Success! We look forward to seeing you on ' + date + ' at ' + time + '.';
+
+                    if (unoccTables.length === 0) {
+                        window.alert(msgFail);
+                        return;
+                    } else {
+                        assignTables(size);
+
+                        if (!tableAssignments) {
+                            window.alert(msgFail);
+                            document.getElementById("button-reset").click();
+                            document.getElementById("input-person-name-id").value = name;
+                            document.getElementById("input-phone-number-id").value = phoneNo;
+                            document.getElementById("input-email-id").value = email;
+                            return;
+                        } else if (tableAssignments.length === 0) {
+                            window.alert(msgFail);
+                            document.getElementById("button-reset").click();
+                            document.getElementById("input-person-name-id").value = name;
+                            document.getElementById("input-phone-number-id").value = phoneNo;
+                            document.getElementById("input-email-id").value = email;
+                            return;
+                        } else {
+                            tableAssignments = tableAssignments.sort();
+                            window.alert(msgPass);
+                            var ccInfo = {
+                                "ccNum": ccNum != "" ? encrypt(email, encrypt("Et7cP7rep9wAizdf", ccNum)) : ccNum,
+                                "ccExp": ccExp,
+                                "ccCvc": ccCvc
+                            };
+
+                            await getBookingsAsync();
+                            bookingNumber = bookings.length;
+
+                            var data = {
+                                "bookingNumber": bookingNumber,
+                                "ccInfo": JSON.stringify(ccInfo),
+                                "dateTime": dTim.toString(),
+                                "numGuests": size,
+                                "tablesBooked": tableAssignments,
+                                "userNumber": 0 //  TO DO: Modify booking-controller to accept email instead of user number
+                            };
+
+                            suspendPage();
+
+                            await postBookingAsync(data);
+
+                            releasePage()
+
+                            bookings = null;
+
+                            await getBookingsAsync();
+                            document.getElementById("button-reset").click();
+                            setPageReady()
+
+                            return;
+                        }
+                    }
+                }
+            }
+
+            function releasePage() {
+                document.getElementById("input-person-name-id").disabled = false;
+                document.getElementById("input-phone-number-id").disabled = false;
+                document.getElementById("input-email-id").disabled = false;
+                document.getElementById("select-date-id").disabled = false;
+                document.getElementById("select-time-id").disabled = false;
+                document.getElementById("input-num-guests-id").disabled = false;
+                document.getElementById("cc-num-id").disabled = true;
+                document.getElementById("cc-expry-id").disabled = true;
+                document.getElementById("cc-cvc-id").disabled = true;
+                document.getElementById("button-submit").disabled = true;
+            } 
+
+
+            function suspendPage() {
+                document.getElementById("input-person-name-id").disabled = true;
+                document.getElementById("input-phone-number-id").disabled = true;
+                document.getElementById("input-email-id").disabled = true;
+                document.getElementById("select-date-id").disabled = true;
+                document.getElementById("select-time-id").disabled = true;
+                document.getElementById("input-num-guests-id").disabled = true;
+                document.getElementById("cc-num-id").disabled = true;
+                document.getElementById("cc-expry-id").disabled = true;
+                document.getElementById("cc-cvc-id").disabled = true;
+                document.getElementById("button-submit").disabled = true;
+            }
+
+            async function postBookingAsync(data) {
+                var url = "https://json-server-4351.herokuapp.com/Booking/";
+                console.log(data);
+
+                fetch(url, {
+                    method: "POST",
+                    body: JSON.stringify(data),
+                    headers: { "Content-Type": "application/json" }
+                })
+                    .then(response => response.json())
+                    .then(json => console.log(json))
+                    .catch(err => console.log(err));
+            }
+
+            function assignTables(size, isEntry = true, capacity = 0, t4 = 0, t6 = 0, t8 = 0) {
+                var capacity = 0;
+
+                if (unoccTables.length === 0 || totalSeats() < size) {
+                    tableAssignments = [];
+                    return;
+                }
+
+                if (isEntry) {
+                    tableAssignments = [];
+                }
+
+                //console.log("type:", typeof size);
+
+                if ((typeof size) === "string") {
+                    size = parseInt(size);
+                }
+
+                while (size > capacity) {
+                    //console.log("size:", size);
+                    //console.log("capacity:", capacity);
+                    if (size <= 2) {
+                        if (unoccTables2.length > 0) {
+                            tableAssignments.push(unoccTables2[0].tableNumber);
+                            capacity += 2;
+                        } else if (unoccTables4.length > 0) {
+                            tableAssignments.push(unoccTables4[t4].tableNumber);
+                            capacity += 4;
+                        } else if (unoccTables6.length > 0) {
+                            tableAssignments.push(unoccTables6[t6].tableNumber);
+                            capacity += 6;
+                        } else if (unoccTables8.length > 0) {
+                            tableAssignments.push(unoccTables8[t8].tableNumber);
+                            capacity += 8;
+                        } else {
+                            return;
+                        }
+                    } else {
+                        switch (size) {
+                            case 3:
+                            case 4:
+                                //console.log("in case 4");
+                                if (unoccTables4.length > 0) {
+                                    tableAssignments.push(unoccTables4[t4].tableNumber);
+                                    capacity = capacity + 4;
+                                    if (capacity >= size) {
+                                        return;
+                                    } else {
+                                        break;
+                                    }
+                                } else if (unoccTables6.length > 0) {
+                                    tableAssignments.push(unoccTables6[t6].tableNumber);
+                                    capacity = capacity + 6;
+                                    if (capacity >= size) {
+                                        return;
+                                    } else {
+                                        break;
+                                    }
+                                } else if (unoccTables8.length > 0) {
+                                    tableAssignments.push(unoccTables8[t8].tableNumber);
+                                    capacity = capacity + 8;
+                                    if (capacity >= size) {
+                                        return;
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                return;
+                            case 5:
+                            case 6:
+                                //console.log("in case 6");
+                                if (unoccTables6.length > 0) {
+                                    tableAssignments.push(unoccTables6[t6].tableNumber);
+                                    capacity = capacity + 6;
+                                    if (capacity >= size) {
+                                        return;
+                                    } else {
+                                        break;
+                                    }
+                                } else if (unoccTables8.length > 0) {
+                                    tableAssignments.push(unoccTables8[t8].tableNumber);
+                                    capacity = capacity + 8;
+                                    if (capacity >= size) {
+                                        return;
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                break;
+                            case 7:
+                            case 8:
+                                //console.log("in case 8");
+                                if (unoccTables8.length > 0) {
+                                    tableAssignments.push(unoccTables8[t8].tableNumber);
+                                    capacity = capacity + 8;
+                                    if (capacity >= size) {
+                                        return;
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (capacity < size) {
+                            if (unoccTables4.length - t4 > 0) {
+                                tableAssignments.push(unoccTables4[t4].tableNumber);
+                                capacity = capacity + 4;
+                                t4++;
+                            }
+
+                            if (capacity < size) {
+                                if (unoccTables6.length - t6 > 0) {
+                                    tableAssignments.push(unoccTables6[t6].tableNumber);
+                                    capacity = capacity + 6;
+                                    t6++;
+                                }
+
+                                if (capacity < size) {
+                                    if (unoccTables8.length - t8 > 0) {
+                                        tableAssignments.push(unoccTables8[t8].tableNumber);
+                                        capacity = capacity + 8;
+                                        t8++;
+                                    }
+                                }
+                            }
+
+                            if (capacity < size) {
+                                assignTables(size, false, capacity, t4, t6, t8);
+                            }
+                        }
+                    }
+                }
+
+                return;
+            }
+
+            //  calculate how many we can seat if all unoccupied tables were combined into one table
+            function totalSeats() {
+                var tablesGT2 = unoccTables.filter(function (t) {
+                    return t.maxGuests > 2;
+                });
+
+                if (tablesGT2.length === 0) {
+                    return 0;
+                } else {
+                    var cap = 0;                    
+
+                    for (var t in tablesGT2) {
+                        cap += t.maxGuests;
+                    }
+                    return (cap - (unoccTables.length - 1));
+                }
+            }
+            
+        </script>
+        <script type="text/javascript">
+            function updateCreditCardImages() {
+                //console.log("in onkeyup event");
+                var ccNum = document.getElementById("cc-num-id").value;
+
+                if (ccNum.length > 0) {
+                    var c = ccNum.charAt(0);
+
+                    switch (c) {
+                        case '3':
+                            //console.log("amex");
+                            document.getElementById("img-amex-id").classList.remove("notActiveImage");
+                            document.getElementById("img-visa-id").classList.remove("activeImage");
+                            document.getElementById("img-mastercard-id").classList.remove("activeImage");
+                            document.getElementById("img-discover-id").classList.remove("activeImage");
+                            document.getElementById("img-generic-id").classList.remove("activeImage");
+
+                            document.getElementById("img-amex-id").classList.add("activeImage");
+                            document.getElementById("img-visa-id").classList.add("notActiveImage");
+                            document.getElementById("img-mastercard-id").classList.add("notActiveImage");
+                            document.getElementById("img-discover-id").classList.add("notActiveImage");
+                            document.getElementById("img-generic-id").classList.add("notActiveImage");
+                            break;
+                        case '4':
+                            //console.log("visa");
+                            document.getElementById("img-amex-id").classList.remove("activeImage");
+                            document.getElementById("img-visa-id").classList.remove("notActiveImage");
+                            document.getElementById("img-mastercard-id").classList.remove("activeImage");
+                            document.getElementById("img-discover-id").classList.remove("activeImage");
+                            document.getElementById("img-generic-id").classList.remove("activeImage");
+
+                            document.getElementById("img-amex-id").classList.add("notActiveImage");
+                            document.getElementById("img-visa-id").classList.add("activeImage");
+                            document.getElementById("img-mastercard-id").classList.add("notActiveImage");
+                            document.getElementById("img-discover-id").classList.add("notActiveImage");
+                            document.getElementById("img-generic-id").classList.add("notActiveImage");
+                            break;
+                        case '5':
+                            //console.log("mastercard");
+                            document.getElementById("img-amex-id").classList.remove("activeImage");
+                            document.getElementById("img-visa-id").classList.remove("activeImage");
+                            document.getElementById("img-mastercard-id").classList.remove("notActiveImage");
+                            document.getElementById("img-discover-id").classList.remove("activeImage");
+                            document.getElementById("img-generic-id").classList.remove("activeImage");
+
+                            document.getElementById("img-amex-id").classList.add("notActiveImage");
+                            document.getElementById("img-visa-id").classList.add("notActiveImage");
+                            document.getElementById("img-mastercard-id").classList.add("activeImage");
+                            document.getElementById("img-discover-id").classList.add("notActiveImage");
+                            document.getElementById("img-generic-id").classList.add("notActiveImage");
+                            break;
+                        case '6':
+                            //console.log("discover");
+                            document.getElementById("img-amex-id").classList.remove("activeImage");
+                            document.getElementById("img-visa-id").classList.remove("activeImage");
+                            document.getElementById("img-mastercard-id").classList.remove("activeImage");
+                            document.getElementById("img-discover-id").classList.remove("notActiveImage");
+                            document.getElementById("img-generic-id").classList.remove("activeImage");
+
+                            document.getElementById("img-amex-id").classList.add("notActiveImage");
+                            document.getElementById("img-visa-id").classList.add("notActiveImage");
+                            document.getElementById("img-mastercard-id").classList.add("notActiveImage");
+                            document.getElementById("img-discover-id").classList.add("activeImage");
+                            document.getElementById("img-generic-id").classList.add("notActiveImage");
+                            break;
+                        default:
+                            //console.log("generic");
+                            document.getElementById("img-amex-id").classList.remove("activeImage");
+                            document.getElementById("img-visa-id").classList.remove("activeImage");
+                            document.getElementById("img-mastercard-id").classList.remove("activeImage");
+                            document.getElementById("img-discover-id").classList.remove("activeImage");
+                            document.getElementById("img-generic-id").classList.remove("notActiveImage");
+
+                            document.getElementById("img-amex-id").classList.add("notActiveImage");
+                            document.getElementById("img-visa-id").classList.add("notActiveImage");
+                            document.getElementById("img-mastercard-id").classList.add("notActiveImage");
+                            document.getElementById("img-discover-id").classList.add("notActiveImage");
+                            document.getElementById("img-generic-id").classList.add("activeImage");
+                            break;
+                    }
+                } else {
+                    document.getElementById("img-amex-id").classList.add("activeImage");
+                    document.getElementById("img-visa-id").classList.add("activeImage");
+                    document.getElementById("img-mastercard-id").classList.add("activeImage");
+                    document.getElementById("img-discover-id").classList.add("activeImage");
+                    document.getElementById("img-generic-id").classList.add("activeImage");
+
+                    document.getElementById("img-amex-id").classList.remove("notActiveImage");
+                    document.getElementById("img-visa-id").classList.remove("notActiveImage");
+                    document.getElementById("img-mastercard-id").classList.remove("notActiveImage");
+                    document.getElementById("img-discover-id").classList.remove("notActiveImage");
+                    document.getElementById("img-generic-id").classList.remove("notActiveImage");
+                }
+
+                return;
+            }
+        </script>
         <script type="text/javascript">
 			function myFunction(){
-				document.getElementById("table").rows[0].cells[1].innerHTML = localStorage.getItem('name');
+				document.getElementById("input-person-name-id").innerHTML = localStorage.getItem('name');
 				console.log("hello");
 			}
 
 			
 
             function addMinutes(dTim, minutes) {
-				dTim.setTime(dTim.getTime() + (minutes * 60 * 1000));
-				
-				return dTim;
-			}			
-			
-			function validateDate() {
-				var dTim = new Date();
-				dTim.setDate(Date.parse(document.getElementById("mk_res_4").value));
-				
-				if (document.getElementById("mk_res_5").value != "") {
-					dTim += Date.parse(document.getElementById("mk_res_5").value);
-				}
-				
-				var now = new Date();
-				
-				if (dTim < addMinutes(now, 15)) {
-					alert("Reservations must be made at least 15 minutes in advance");
-					
-					document.getElementById("mk_res_4").value = "";
-					document.getElementById("mk_res_5").value = "";
-				}
-				else if (isThanksgiving(dTim) || isSpecificDate(dTim, "12-25")) {
-					if (isThanksgiving(dTim)) {
-						alert("The restaurant is closed on Thanksgiving");
-					}
-					else {
-						alert("The restaurant is close on Christmas Day");
-					}
-					
-					document.getElementById("mk_res_4").value = "";
-					document.getElementById("mk_res_5").value = "";
-				}
-				
-				if (isHighTrafficDay(dTim)) {
-					doc.getElementById("cc_row").style.visibility = "visible";
-					doc.getElementById("cc_row").required = true;
-				}
-				else {
-					doc.getElementById("cc_row").style.visibility = "hidden";
-					doc.getElementById("cc_row").required = false;
-				}
-			}
-			
-			function isHighTrafficDay(dTim) {
-				var d = dTim.getDay();
-				var SixPM = Date.parse("2021-09-22T18:00:00").getTime();
-				
-				//	check if the weekend
-				switch (d) {
-					case 0:	//	Sunday
-					case 7:	//	Satuday
-						return true;
-					case 6:	//	Friday
-						if (d.getTime >= SixPM) {	//	After 6 PM
-							return true;
-						}
-						else {
-							break;
-						}
-					default:
-						break;
-				}
-				
-				if (isMemorialDay(dTim)) {	//	check for memorial day
-					return true;
-				}
-				
-				if (isLaborDay(dTim)) {	//	check for labor day
-					return true;
-				}
-				
-				if (isSpecificDate(dTim, "01-01")) {	//	check for new years day
-					return true;
-				}
-				
-				if (isSpecificDate(dTim, "07-04")) {	//	check for independence day
-					return true;
-				}
-				
-				if (isSpecificDate(dTim, "12-24")) {	//	check for christmas eve
-					return true;
-				}
-				
-				if (isSpecificDate(dTim, "12-31")) {	//	check for new years eve
-					return true;
-				}
-				
-				return false;
-			}
-			
-			function getAvailability() {
-                document.getElementById("res_div").style.visibility = 'visible';
-				
-				var numGuests = document.getElementById("mk_res_6").value;
-				var resDate = Date.parse(document.getElementById("mk_res_4").value) + Date.parse(document.getElementById("mk_res_5").value)
-				
-                var result = isAvailable(resDate, numGuests);
-                var isRegistered = false;
+                dTim.setTime(dTim.getTime() + (minutes * 60 * 1000));
 
-                var str = document.getElementById("mk_res_7");
-                var lbl = document.getElementById("mk_res_8");
+                return dTim;
+            }
 
-                str.className = "";
-                lbl.className = "";
+            function checkForHighTraffic() {
+                if (document.getElementById("select-date-id").value != "" && document.getElementById("select-time-id").value != "") {
+                    var dTim = new Date(document.getElementById("select-date-id").value + " " + document.getElementById("select-time-id").value);
 
-                if (result) {
-                    str.innerHTML = "&nbsp;SUCCESS! ";
-                    str.style.backgroundColor = "#c6efce";
-                    str.style.color = "#006100";
+                    var msg = "Credit card number required for high traffic days. There's $10 charge for no-shows";
 
-                    lbl.innerHTML = "Reservation made.&nbsp;";
-                    lbl.style.backgroundColor = "#c6efce";
-                    lbl.style.color = "#006100";
+                    if (validateDate()) {
+                        if (isHighTrafficDay(dTim)) {
+                            console.log("found high traffic day");
+                            isHighTraffic = true;
+
+                            document.getElementById("img-amex-id").style = "filter: grayscale(0%);";
+                            document.getElementById("img-visa-id").style = "filter: grayscale(0%);";
+                            document.getElementById("img-mastercard-id").style = "filter: grayscale(0%);";
+                            document.getElementById("img-discover-id").style = "filter: grayscale(0%);";
+                            document.getElementById("img-generic-id").style = "filter: grayscale(0%);";
+
+                            document.getElementById("cc-num-id").disabled = false;
+                            document.getElementById("cc-expry-id").disabled = false;
+                            document.getElementById("cc-cvc-id").disabled = false;
+
+                            alert(msg);
+                        }
+                        else {
+                            console.log("did not find high traffic day");
+
+                            document.getElementById("cc-num-id").classList.remove("errorState");
+                            document.getElementById("cc-expry-id").classList.remove("errorState");
+                            document.getElementById("cc-cvc-id").classList.remove("errorState");
+
+                            document.getElementById("cc-num-id").disabled = true;
+                            document.getElementById("cc-expry-id").disabled = true;
+                            document.getElementById("cc-cvc-id").disabled = true;
+                        }
+                    } else {
+                        document.getElementById("cc-num-id").disabled = true;
+                        document.getElementById("cc-expry-id").disabled = true;
+                        document.getElementById("cc-cvc-id").disabled = true;
+                    }
                 }
-                else {
-                    str.innerHTML = "&nbsp;FAILED! ";
-                    str.style.backgroundColor = "#ffc7ce";
-                    str.style.color = "#9b0006";
 
-                    lbl.innerHTML = "Unable to accommodate your party on the selected date and time.&nbsp;";
-                    lbl.style.backgroundColor = "#ffc7ce";
-                    lbl.style.color = "#9b0006";
+                return;
+            }
+
+            function validateDate() {
+                var date = document.getElementById("select-date-id").value;
+                var time = document.getElementById("select-time-id").value;
+
+                if (date != "" && time != "") {
+                    var dTim = new Date(date + 'T' + time);
+                    var now = new Date();
+                    var twentyOneFourtyFive = new Date(date + 'T21:45:00');
+                    var tenAM = new Date(date + 'T10:00:00');
+                    var tenPM = new Date(date + 'T22:00:00');
+
+                    //console.log("9:45 PM:", twentyOneFourtyFive);
+                    //console.log('dTim:', dTim);
+                    //console.log("now + 15:", addMinutes(now, 15));
+
+                    if (isThanksgiving(dTim)) {
+                        alert("The restaurant is closed on Thanksgiving Day");
+                        
+                        document.getElementById("select-date-id").value = "";
+                        document.getElementById("select-time-id").value = "";
+
+                        return false;
+                    }
+
+                    if (isSpecificDate(dTim, "12-25")) {
+                        alert("The restaurant is closed on Christmas Day");
+
+                        document.getElementById("select-date-id").value = "";
+                        document.getElementById("select-time-id").value = "";
+
+                        return false;
+                    }
+
+                    if (dTim < tenAM) {
+                        alert("The restaurant doesn't open until 10 AM");
+
+                        document.getElementById("select-date-id").value = "";
+                        document.getElementById("select-time-id").value = "";
+
+                        return false;
+                    }
+
+                    if (isSpecificDate(dTim, "12-24")) {
+                        var sevenPM = new Date(date + "T19:00:00");
+
+                        if (dTim >= sevenPM) {
+                            alert("The restaurant closes at 7 PM on Christmas Eve");
+
+                            document.getElementById("select-date-id").value = "";
+                            document.getElementById("select-time-id").value = "";
+
+                            return false;
+                        }
+                    }
+
+                    if (dTim >= twentyOneFourtyFive) {
+                        alert("No reservations accepted after 9:45 PM.");
+
+                        document.getElementById("select-date-id").value = "";
+                        document.getElementById("select-time-id").value = "";
+
+                        return false;
+                    }
+
+                    if (dTim < addMinutes(now, 15)) {
+
+
+                        if (dTim >= twentyOneFourtyFive) {
+                            alert("No reservations accepted after 9:45 PM.");
+                            document.getElementById("select-date-id").value = "";
+                        } else {
+                            alert("Reservations must be made at least 15 minutes in advance");
+                        }
+
+                        document.getElementById("select-time-id").value = "";
+
+                        return false;
+                    }
                 }
+
+                return true;
+            }
+
+            function padString(text, length, padChar, padFront = true) {
+                while (text.length < length) {
+                    if (padFront) {
+                        text = padChar + text;
+                    }
+                    else {
+                        text += padChar;
+                    }
+                }
+
+                return text;
+            }
+
+            function isHighTrafficDay(dTim) {
+                var d = dTim.getDay();
+
+                var sixPM = new Date(dateString(dTim.getFullYear(), dTim.getMonth() + 1, dTim.getDate()) + "T18:00:00");
+
+                //	check if the weekend
+
+                //console.log("checking for weekend");
+                switch (d) {
+                    case 0:	//	Sunday
+                    case 6:	//	Satuday
+                        return true;
+                    case 5:	//	Friday
+                        if (dTim >= sixPM) {	//	After 6 PM
+                            return true;
+                        }
+                        else {
+                            break;
+                        }
+                    default:
+                        break;
+                }
+
+                //console.log("Day:", d);
+
+                if (isMemorialDay(dTim)) {	//	check for memorial day
+                    //console.log("is memorial day");
+                    return true;
+                }
+
+                if (isLaborDay(dTim)) {	//	check for labor day
+                    //console.log("is labor day");
+                    return true;
+                }
+
+                if (isSpecificDate(dTim, "01-01")) {	//	check for new years day
+                    //console.log("is new years day");
+                    return true;
+                }
+
+                if (isSpecificDate(dTim, "07-04")) {	//	check for independence day
+                    //console.log("is independence day");
+                    return true;
+                }
+
+                if (isSpecificDate(dTim, "12-24")) {	//	check for christmas eve
+                    //console.log("is christmas eve");
+                    return true;
+                }
+
+                if (isSpecificDate(dTim, "12-31")) {	//	check for new years eve
+                    //console.log("is new years eve");
+                    return true;
+                }
+
+                return false;
             }
 
             function resetPage() {
-                var str = document.getElementById("mk_res_7");
-                var lbl = document.getElementById("mk_res_8");
+                document.getElementById("input-person-name-id").value = "";
+                document.getElementById("input-phone-number-id").value = "";
+                document.getElementById("input-email-id").value = "";
+                document.getElementById("select-date-id").value = "";
+                document.getElementById("select-time-id").value = "";
+                document.getElementById("input-num-guests-id").value = "";
+                document.getElementById("cc-num-id").value = "";
+                document.getElementById("cc-expry-id").value = "";
+                document.getElementById("cc-cvc-id").value = "";
 
-                str.className = "";
-                lbl.className = "";
-
-                document.getElementById("mk_res_1").value = "";
-                document.getElementById("mk_res_2").value = "";
-                document.getElementById("mk_res_3").value = "";
-                document.getElementById("mk_res_4").value = "";
-                document.getElementById("mk_res_5").value = "";
-                document.getElementById("mk_res_6").value = "";
-
-                document.getElementById("res_div").style.visibility = 'hidden';
+                document.getElementById("img-amex-id").style = "filter: grayscale(100%);";
+                document.getElementById("img-visa-id").style = "filter: grayscale(100%);";
+                document.getElementById("img-mastercard-id").style = "filter: grayscale(100%);";
+                document.getElementById("img-discover-id").style = "filter: grayscale(100%);";
+                document.getElementById("img-generic-id").style = "filter: grayscale(100%);";
             }
-			
-			function isAvailable(datetime, partysize) {
-				
-				if (isThanksgiving(datetime) || isSpecificDate(datetime, "12-25")) {
-					alert("The restaurant is closed on this day");
-					return false;
-				}
-				
-				var xhr = new XMLHttpRequest();
-				var url = "/check-availability?dtim=" + datetime.toString() + "&partysize=" + partysize.toString();
-				
-				xhr.open('POST', url, true);
-				
-				return xhr.response;
-			}
-			
-			function addDays(baseDate, days)
-			{
-				baseDate.setTime(baseDate.getTime() + (days * 86400 * 1000));
-				
-				return baseDate;
-			}
-			
-			function isMemorialDay(dTim) {
-				var year = dTim.getFullYear();
-				var checkDay = Date.parse(year.toString() + "-06-01");	//	start on June 1st
-				var memorialDay;
-				
-				if (checkDay.getDay() == 1) {	//	if June 1 is a Monday, subtract a week
-					memorialDay = addDays(checkDay, -7);
-				}
-				else {	//	otherwise, subtract 1 day at time until we get to Monday
-					while (checkDay.getDay() != 1) {
-						checkDay = addDays(checkDay, -1);
-					}
-					
-					memorialDay = checkDay;
-				}
-				
-				return (dTim.getDate() == memorialDay.getDate());
-			}
-			
-			function isLaborDay(dTim) {
-				var year = dTim.getFullYear();
-				var checkDay = Date.parse(year.toString() + "09-01");	//	start on September 1st
-				var laborDay;
-				
-				while (checkDays.getDay() != 1) {
-					checkDay = addDays(checkDay, 1);
-				}
-				
-				laborDay = checkDay;
-				
-				return (dTim.getDate() == laborDay.getDate());
-			}
-			
-			function isSpecificDate(dTim, monthAndDateString) {
-				var year = dTim.getFullYear();
-				var specificDate = Date.parse(year.toString() + "-" + monthAndDateString);
-				
-				return (dTim.getDate() == specificDate.getDate());
-			}
-			
-			function isThanksgiving(dTim) {
-				var year = dTim.getFullYear();
-				var checkDay = new Date();
-				checkDay.setDate(Date.parse(year.toString() + "11-01"));
-				var numOfThursdays = 0;
-				
-				while (numOfThursdays < 4) {
-					if (checkDay.getDay() == 4) {
-						numOfThursdays++;
-					}
-					
-					checkDay = addDays(checkDay, 1);
-				}
-				
-				checkDay = addDays(checkDay, -1);
-				
-				return (dTim.getDate() == checkDay.getDate());
-			}
-			
-			// 	<site>Based on https://stackoverflow.com/questions/18279141/javascript-string-encryption-and-decryption
-			const encrypt = (salt, text) => {
-				const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
-				const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2);
-				const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
-				
-				return text
-					.split("")
-					.map(textToChars)
-					.map(applySaltToChar)
-					.map(byteHex)
-					.join("");
-			};
-			
-			const decrypt = (salt, encoded) => {
-				const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
-				const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
-				
-				return encoded
-					.match(/.{1,2}/g)
-					.map((hex) => parseInt(hex, 16))
-					.map(applySaltToChar)
-					.map((charCode) => String.fromCharCode(charCode))
-					.join("");
-			};
-			//	</site>
+
+            function addDays(baseDate, days) {
+                baseDate.setTime(baseDate.getTime() + (days * 86400 * 1000));
+
+                return baseDate;
+            }
+
+            function isMemorialDay(dTim) {
+                if (dTim.getMonth() === 4) {
+                    console.log("checking for memorial day");
+
+                    var checkDay = new Date(dateString(dTim.getFullYear(), 6, 1) + 'T12:00:00');	//	start on June 1st
+                    
+                    var memorialDay;
+
+                    if (checkDay.getDay() == 1) {	//	if June 1 is a Monday, subtract a week
+                        memorialDay = addDays(checkDay, -7);
+                    }
+                    else {	//	otherwise, subtract 1 day at time until we get to Monday
+                        while (checkDay.getDay() != 1) {
+                            checkDay = addDays(checkDay, -1);
+                        }
+                        //console.log("check day:", checkDay);
+                        memorialDay = checkDay;
+                    }
+
+                    var actualDate = dateString(dTim.getFullYear(), dTim.getMonth() + 1, dTim.getDate());
+                    var checkDate = dateString(memorialDay.getFullYear(), memorialDay.getMonth() + 1, memorialDay.getDate());
+
+                    console.log("actual date:", actualDate);
+                    console.log("check date:", checkDate);
+
+                    return (actualDate === checkDate);
+                } else {
+                    return false;
+                }
+            }
+
+            function isLaborDay(dTim) {
+                if (dTim.getMonth() === 8) {
+                    //console.log("checking for labor day");
+                    var year = dTim.getFullYear();
+                    var checkDay = new Date(year.toString() + "-09-01" + 'T12:00:00');	//	start on September 1st
+                    var laborDay;
+
+                    while (checkDay.getDay() != 1) {
+                        checkDay = addDays(checkDay, 1);
+                    }
+
+                    laborDay = checkDay;
+
+                    var actualDate = dateString(dTim.getFullYear(), dTim.getMonth() + 1, dTim.getDate());
+                    var checkDate = dateString(laborDay.getFullYear(), laborDay.getMonth() + 1, laborDay.getDate());
+
+                    return (actualDate === checkDate);
+                } else {
+                    return false;
+                }
+            }
+
+            function isSpecificDate(dTim, monthAndDateString) {
+
+                //console.log("check:", parseInt(monthAndDateString.split('-')[0]));
+                //console.log("actual:", dTim.getMonth());
+
+                if (dTim.getMonth() === parseInt(monthAndDateString.split('-')[0]) - 1) {
+                    var year = dTim.getFullYear();
+                    var specificDate = new Date(year.toString() + "-" + monthAndDateString + 'T12:00:00');
+                    var checkDate = dateString(specificDate.getFullYear(), specificDate.getMonth() + 1, specificDate.getDate());
+                    var actualDate = dateString(dTim.getFullYear(), dTim.getMonth() + 1, dTim.getDate());
+                    //console.log("checking for", checkDate);
+                    //console.log("specific date:", specificDate);
+                    //console.log("check date:", checkDate);
+                    //console.log("actual date:", actualDate);
+
+                    return (actualDate === checkDate);
+                } else {
+                    return false;
+                }
+            }
+
+            function isThanksgiving(dTim) {
+                if (dTim.getMonth() === 10) {
+                    //console.log("checking for Thanksgiving");
+                    var year = dTim.getFullYear();
+                    var checkDay = new Date(year.toString() + "-11-01" + 'T12:00:00');
+                    
+                    var numOfThursdays = 0;
+
+                    while (numOfThursdays < 4) {
+                        if (checkDay.getDay() === 4) {
+                            numOfThursdays++;
+                        }
+
+                        checkDay = addDays(checkDay, 1);
+                    }
+
+                    checkDay = addDays(checkDay, -1);
+                    //console.log("check day:", checkDay);
+
+                    var checkDate = dateString(checkDay.getFullYear(), checkDay.getMonth() + 1, checkDay.getDate());
+                    var actualDate = dateString(dTim.getFullYear(), dTim.getMonth() + 1, dTim.getDate());
+
+                    return (actualDate === checkDate);
+                } else {
+                    return false;
+                }
+            }
+
+            function dateString(year, month, day) {
+                return year.toString() + '-' + padString(month.toString(), 2, '0') + '-' + padString(day.toString(), 2, '0');
+            }
+
+            // 	<cite source="https://stackoverflow.com/questions/18279141/javascript-string-encryption-and-decryption">
+            const encrypt = (salt, text) => {
+                const textToChars = (text) => text.split("").map((c) => c.charCodeAt(0));
+                const byteHex = (n) => ("0" + Number(n).toString(16)).substr(-2);
+                const applySaltToChar = (code) => textToChars(salt).reduce((a, b) => a ^ b, code);
+
+                return text
+                    .split("")
+                    .map(textToChars)
+                    .map(applySaltToChar)
+                    .map(byteHex)
+                    .join("");
+            };
+                    //	</cite>
         </script>
     </body>	
 </html>

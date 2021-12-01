@@ -2,12 +2,18 @@
 //	include the express module
 var express = require("express");
 
+//// include the xmlhttprequest module
+//var xhttp = require("xmlhttprequest").XMLHttpRequest;
+
+////  create the request handler
+//var xhr = new XMLHttpRequest();
+
 //	create an express application
 var app = express();
 
 //	helps in extracting the body portion of an incoming request stream
 var bodyparser = require("body-parser");
-var urlencodedParser = bodyparser.urlencoded({ extended: false })
+var urlencodedParser = bodyparser.urlencoded({ extended: false });
 
 //	fs module, API for interacting with the file system
 var fs = require("fs");
@@ -24,6 +30,8 @@ var mysql = require("mysql");
 var xml2js = require("xml2js");
 
 var xmlParser = xml2js.parseString;
+
+var jquery = require('jquery');
 
 //	use express-session
 app.use(session({
@@ -84,8 +92,37 @@ app.get("/login", function(req,res){
 //	GET method to get availability around requested time
 app.get("/get-availability", function(req, res)
 {
-	// dummy data
-	//var tablesAvailableSize2 = [JSON.Parse('{ "TableId" : 
+    var urlBase = "https://json-server-4351.herokuapp.com/";
+    var urlResTableBase = urlBase + "/ResTable/";
+    var urlBookTableBase = urlBase + "/BookTable/";
+    var urlBookingBase = urlBase + "/Booking/";
+
+    var dTim = new Date(req.body.select_date + 'T' + req.body.select_time);
+    var size = req.body.num_guests;
+});
+
+app.get("/images/amex", function(req, res) {
+	res.sendFile(__dirname + "/images/amex.png");
+});
+
+app.get("/images/visa", function(req, res) {
+	res.sendFile(__dirname + "/images/visa.png");
+});
+
+app.get("/images/mastercard", function(req, res) {
+	res.sendFile(__dirname + "/images/mastercard.png");
+});
+
+app.get("/images/discover", function(req, res) {
+	res.sendFile(__dirname + "/images/discover.png");
+});
+
+app.get("/images/generic", function(req, res) {
+	res.sendFile(__dirname + "/images/generic.png");
+});
+
+app.get("/images/atomic", function (req, res) {
+    res.sendFile(__dirname + "/images/atomic");
 });
 
 //	POST method to make reservation
@@ -133,10 +170,6 @@ function buildTablesQuery(maxGuests, targetDateTime) {
 	return q;
 }
 
-app.get("*/*", function(req, res) {
-	res.sendStatus(404);
-});
-
 var username;
 var password;
 var fullName;
@@ -179,4 +212,12 @@ app.post('/register', urlencodedParser, function(req,res){
 
 	
 	
-})
+});
+
+app.get("/images/*", function(req, res) {
+	res.sendStatus(404);
+});
+
+app.get("*/*", function(req, res) {
+	res.sendStatus(404);
+});

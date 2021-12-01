@@ -10,9 +10,28 @@
 <body>
     <h1>Reserve Your Table</h1>
     <div class ="landing-page-buttons">
-        <button><a href="login">Login</a></button>
-        <button><a href ="registration">Register</a></button>
-        <button><a href ="make-reservation">Continue as Guest</a></button>
+        <button onclick="continueAsGuest()"><a href="login">Login</a></button>
+        <button onclick="continueAsGuest()"><a href ="registration">Register</a></button>
+        <button onclick="continueAsGuest()"><a href ="make-reservation">Continue as Guest</a></button>
     </div>
 </body>
+
+<script type="text/javascript">
+    function continueAsGuest(){
+        
+            localStorage.removeItem('name');
+            localStorage.removeItem('phoneNumber');
+            localStorage.removeItem('email');
+            localStorage.removeItem('preferredPayment');
+            localStorage.removeItem('billingAddress');
+            localStorage.removeItem('mailingAddress');
+            localStorage.removeItem('dinerNumber');
+            localStorage.removeItem('id');
+            localStorage.removeItem('passWord');
+            localStorage.removeItem('phoneNumber');
+            localStorage.removeItem('preferredNumber');
+            localStorage.removeItem('userName');
+        
+    }
+</script>
 </html>

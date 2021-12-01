@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,14 +10,19 @@
     
 </head>
 <body>
+    <div class="ribbon">
+        <br />
+        <a href="/make-reservation" style="color: white;">Make a reservation</a>
+        <a href="/registration" style="color: white;">Registration</a>
+    </div>
     <h1>Register Your Account</h1>
-    <form id = "reg-form" method = "POST" action ="javascript:postUser()" onsubmit="Validation()">
+    <form id = "reg-form" method = "POST" action ="javascript:postUser()">
         <div class="main-holder" id="signup-form">
             <input type="text" placeholder="Username" name="userName" id="userName" required>
 
             <input type="password" placeholder="Password" name="passWord" id="passWord" required>
             
-            <input type="password" placeholder="Confirm Password" name="confirm" id="confirm" required>
+            <!--input type="password" placeholder="Confirm Password" name="confirm" id="confirm" required-->
 
             <input type="text" placeholder = "Full Name" name="fname" id="fname" required>
 
@@ -58,7 +63,7 @@
 
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js" integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
+    <!--script>
         
         
         function Validation(){
@@ -86,7 +91,7 @@
     }
     
         
-    </script>  
+    </script-->  
 
 <script type="text/javascript">
     
@@ -135,6 +140,7 @@
             console.log(localStorage.getItem("IDNumber"));
             
             
+            
 
            
         
@@ -149,6 +155,9 @@
 		xhr.onreadystatechange = function () {
 		if (xhr.readyState === 4) {
 			console.log(xhr.status);
+            if(xhr.status == 201){
+                window.alert("Account Successfully Created");
+            }
 			console.log(xhr.responseText);
 		}};
 
@@ -176,7 +185,7 @@
   "mailingAddress": formElements['mailingAddress'].value,
   "name": formElements['fname'].value,
   "passWord": cipher,
-  "phoneNumber": parseInt(formElements['phoneNumber'].value),
+  "phoneNumber": formElements['phoneNumber'].value,
   "points": 0,
   //"points": parseInt(formElements['points'].value),
   "preferredPayment": formElements['preferredPayment'].value,

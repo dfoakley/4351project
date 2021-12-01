@@ -8,6 +8,7 @@
     <link rel = "stylesheet" href="../client/login.css">
 </head>
 <body>
+  <a href="/make-reservation" onclick="removeLocal()">Make a reservation</a>
     <h1>Login</h1>
     <form id="login-form" method="POST" action="javascript:getUser()">
         <input type="text" name="userName" id="userName" class="login-form-field" placeholder="Username" required="">
@@ -37,6 +38,12 @@
         const form = document.getElementById('login-form');
       </script>
       <script type="text/javascript">
+        localStorage.setItem("ticket", false);
+        function removeLocal(){
+          if(localStorage.getItem('ticket') == false){
+            localStorage.removeItem('name');
+          }
+        }
         //var passWord = document.getElementById['passWord'].value
         var result;
         function getUser() {
@@ -65,20 +72,26 @@
                 }
 
                 var decipher = crypt.decrypt(encrypted__passWord);
+                //localStorage.setItem('decipher', decipher);
 
                 
                 var passWord = document.getElementById('passWord').value
                 if(passWord == decipher){
+                  localStorage.setItem("ticket", true);
                 window.alert("Succesfully logged in")
                  }
                  else if(passWord != result.passWord){
+                   localStorage.removeItem('name');
                    window.alert("Password does not match Username.")
                  }
                 
+                
+
                 console.log(result.passWord);
                 //console.log(xhr.responseText["passWord"]);
+                console.log(decipher);
             }};
-    
+            //console.log(decipher);
     
     
             var data = {
@@ -94,20 +107,20 @@
               .then(response => response.json())
               .then(data => {
               localStorage.setItem('billingAddress', data['billingAddress'])
-              localStorage.setItem('dinerNumber', data['dinerNumber'].toString())
+              localStorage.setItem('dinerNumber', data['dinerNumber'])
               localStorage.setItem('email', data['email'])
-              localStorage.setItem('id', data['id'].toString())
+              localStorage.setItem('id', data['id'])
               localStorage.setItem('mailingAddress', data['mailingAddress'])
               localStorage.setItem('name', data['name'])
               localStorage.setItem('passWord', data['passWord'])
-              localStorage.setItem('phoneNumber', data['phoneNumber'].toString())
-              localStorage.setItem('points', data['points'].toString())
+              localStorage.setItem('phoneNumber', data['phoneNumber'])
+              localStorage.setItem('points', data['points'])
               localStorage.setItem('preferredPayment', data['preferredPayment'])
               localStorage.setItem('userName', data['userName'])
               console.log(localStorage.getItem('userName'))
               console.log(localStorage.getItem('phoneNumber'))
               console.log(localStorage.getItem('email'))
-              console.log(localStorage.getItem('phoneNumber'))
+              
               //window.location.href = "make-reservation";
 
 
