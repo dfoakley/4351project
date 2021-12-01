@@ -40,9 +40,7 @@
             
             <input type="text" placeholder="Mailing Address" name="mailingAddress" id="mailingAddress" required>
 
-            <label>
-                <input type ="checkbox" id = "sameAddress" name ="sameAddress" onclick="fillInAddress()">
-            </label>
+            <input type ="checkbox" id = "sameAddress" name ="sameAddress" onclick="fillInAddress()"/><label for="sameAddress">Business address same as mailing address?</label>
             
 
             <input type="text" placeholder="Billing Address" name="billingAddress" id="billingAddress" required>
@@ -105,9 +103,11 @@
         var text = document.getElementById('mailingAddress').value;
         if(checky.checked == true){
             document.getElementById('billingAddress').value = text;
+            document.getElementById('billingAddress').disabled = true;
         }
         else{
             document.getElementById('billingAddress').value = "";
+            document.getElementById('billingAddress').disabled = false;
         }
     }
     
