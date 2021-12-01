@@ -67,13 +67,13 @@ var con = mysql.createPool(cfg);
 //	server listens on port 9001 for incoming connections
 module.exports = app.listen(process.env.PORT || 9001, () => console.log("Listening on port 9001!"));
 
-app.get("/", function(req, res) {
-	res.sendFile(__dirname + "/client/landingpage.html");
-});
+//app.get("/", function(req, res) {
+//	res.sendFile(__dirname + "/client/landingpage.html");
+//});
 
-app.get("/landingpage", function(req, res) {
-	res.sendFile(__dirname + "/client/landingpage.html");
-});
+//app.get("/landingpage", function(req, res) {
+//	res.sendFile(__dirname + "/client/landingpage.html");
+//});
 
 app.get("/make-reservation", function(req, res) {
 	res.sendFile(__dirname + "/client/make-reservation.html");
