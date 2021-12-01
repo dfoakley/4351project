@@ -219,7 +219,6 @@
                 await test44_PartyOf8();
                 await test45_PartyOf12();
                 await test46_PartyOf4HighTraffic();
-                await test47_BookingFailed();
             }
 
             function test1_NameRequired() {
@@ -1273,17 +1272,17 @@
                     }
                 }
 
-                if (oldTables) {
-                    if (oldTables.length > 0) {
-                        var n = oldTables.length;
+                //if (oldTables) {
+                //    if (oldTables.length > 0) {
+                //        var n = oldTables.length;
 
-                        for (var i = 0; i < n; i++) {
-                            await postNewTableAsync(oldTables[i]);
-                        }
+                //        for (var i = 0; i < n; i++) {
+                //            await postNewTableAsync(oldTables[i]);
+                //        }
 
-                        await getTablesAsync();
-                    }
-                }
+                //        await getTablesAsync();
+                //    }
+                //}
             }
         </script>
         <script type="text/javascript">
