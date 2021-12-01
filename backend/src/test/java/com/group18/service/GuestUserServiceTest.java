@@ -21,7 +21,7 @@ public class GuestUserServiceTest {
 
     Integer id = 0;
     String name = "bob";
-    Integer phoneNumber = 1234567;
+    String phoneNumber = "1234567";
     String email = "bob@test.com";
 
     @InjectMocks

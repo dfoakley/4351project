@@ -23,7 +23,7 @@ public class UserServiceTest {
 
     Integer id = 0;
     String name = "John Doe";
-    Integer phoneNumber = 1234567890;
+    String phoneNumber = "1234567890";
     String email = "test@test.com";
     String userName = "john12";
     String passWord = "doe12";

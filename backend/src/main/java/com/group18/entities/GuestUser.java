@@ -15,6 +15,6 @@ public class GuestUser {
     @Id
     private Integer id;
     private String name;
-    private Integer phoneNumber;
+    private String phoneNumber;
     private String email;
 }

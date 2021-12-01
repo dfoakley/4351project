@@ -18,7 +18,7 @@ public class User {
     @Id
     private Integer id;
     private String name;
-    private Integer phoneNumber;
+    private String phoneNumber;
     private String email;
     private String userName;
     private String passWord;
