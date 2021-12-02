@@ -42,7 +42,7 @@ public class UserConverter {
 
         bean.setName((bean.getName()));
         if(bean.getPhoneNumber() != null) {
-            user.setPhoneNumber(Integer.parseInt(bean.getPhoneNumber()));
+            user.setPhoneNumber(bean.getPhoneNumber());
         }
         user.setEmail(bean.getEmail());
         user.setUserName(bean.getUserName());

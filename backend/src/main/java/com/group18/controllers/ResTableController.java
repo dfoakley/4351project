@@ -28,6 +28,14 @@ public class ResTableController {
         return new ResponseEntity<ResTable>(resTable, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/getAllTables", produces = "application/json")
+    public ResponseEntity<List<ResTable>> getAllTable (
+
+    ) {
+        List<ResTable> resTable = resTableService.getAllTables();
+        return new ResponseEntity<>(resTable, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/availableTables", produces = "application/json")
     public ResponseEntity<List<ResTable>> getAvailableTables () {
         List<ResTable> resTable = resTableService.getAvailableTables();
@@ -55,5 +63,11 @@ public class ResTableController {
     ) {
         resTableService.createTable(resTable);
         return new ResponseEntity<ResTable>(resTable, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/deleteAllResTables")
+    public ResponseEntity<ResTable> deleteAllResTables() {
+        resTableService.deleteAllResTables();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
