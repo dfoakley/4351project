@@ -25,7 +25,7 @@
                 <input type="email" class="field" name="input-email" id="input-email-id" required placeholder="E-mail Address" disabled onfocusout="checkEmail()" title="Required" />
                 <input type="date" class="datetime" name="select-date" required onfocusout="checkDate()" onchange="checkDate()" id="select-date-id" disabled title="Required. Select a date either today or in the future." />
                 <input type="time" class="datetime" name="select-time" required onfocusout="checkTime()" onchange="checkForHighTraffic()" min="10:00" max="22:00" id="select-time-id" disabled title="Required. Select a time between 10 AM and 9:45 PM"/>
-                <input type="number" class="field" required min="1" max="20" name="input-num-guests" id="input-num-guests-id" placeholder="Number of Guests" disabled title="Required. Must be an integer between 1 and 20" onfocusout="checkNumGuests()"/>
+                <input type="number" class="field" required min="1" max="15" name="input-num-guests" id="input-num-guests-id" placeholder="Number of Guests" disabled title="Required. Must be an integer between 1 and 15" onfocusout="checkNumGuests()"/>
                 <input type="password" class="field" name="cc-num" id="cc-num-id" maxlength="16" pattern="[0-9]{16}" disabled onkeyup="updateCreditCardImages()" onfocusout="checkCreditCard()" placeholder="Credit Card Number" title="Required. Should be a 16 digit string of integer characters" />
                 <div class="image-row">
                     <img src="/images/amex" id="img-amex-id" width="26" height="20" style="filter: grayscale(100%);" />
@@ -1422,7 +1422,7 @@
                         document.getElementById("input-num-guests-id").classList.add("errorState");
                         document.getElementById("button-submit").disabled = true;
                     } else {
-                        if (!(1 <= size && size <= 20)) {
+                        if (!(1 <= size && size <= 15)) {
                             document.getElementById("input-num-guests-id").classList.add("errorState");
                             document.getElementById("button-submit").disabled = true;
                         } else {
